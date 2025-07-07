@@ -7,7 +7,7 @@ export default function DashboardLayout() {
       <View className="py-8 items-center">
         <Text className="text-xl font-bold text-green-700">Dashboard Area</Text>
       </View>
-      <Stack />
+      <Stack screenOptions={{ headerShown: false }} />
     </View>
   );
 } 

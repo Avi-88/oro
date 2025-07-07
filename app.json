@@ -12,7 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "plugins": ["nativewind/expo", "expo-router"],
+    "plugins": ["expo-router"],
     "ios": {
       "supportsTablet": true
     },
@@ -24,6 +24,7 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     }
   }
