@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { View, Text } from 'react-native';
 
-export default function DashboardLayout() {
+const  DashboardLayout = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <View className="py-8 items-center">
@@ -11,3 +11,5 @@ export default function DashboardLayout() {
     </View>
   );
 } 
+
+export default DashboardLayout
