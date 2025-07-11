@@ -6,7 +6,7 @@ interface User {
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>({name:"John Doe", email:"john.doe@example.com"});
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Simulate async login
