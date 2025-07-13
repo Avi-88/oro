@@ -74,7 +74,7 @@ export default function LoginScreen() {
             <View className="w-full max-w-sm rounded-3xl overflow-hidden border border-white/30 bg-white/20">
               <BlurView
                 intensity={10}
-                tint="light"
+                tint="dark"
                 className="w-full p-8 rounded-3xl items-center bg-white/20"
               >
                 <Text className="text-3xl font-bold text-blue-600 mb-6">Login</Text>
