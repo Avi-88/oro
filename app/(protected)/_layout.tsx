@@ -1,12 +1,27 @@
-import { Redirect, Stack } from 'expo-router'
-import { useAuth } from '@clerk/clerk-expo'
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
+import { Stack, Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 
-export default function AuthRoutesLayout() {
-  const { isSignedIn } = useAuth()
+export default function ProtectedLayout() {
+  const { isLoaded } = useAuth();
 
-  if (!isSignedIn) {
-    return <Redirect href={'/login'} />
+  if (!isLoaded) {
+    // Show a splash or loading indicator while auth state is being determined
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
-  return <Stack screenOptions={{headerShown: false}} />
+  return (
+    <>
+      <SignedIn>
+        <Stack screenOptions={{ headerShown: false }} />
+      </SignedIn>
+      <SignedOut>
+        <Redirect href="/login" />
+      </SignedOut>
+    </>
+  );
 }
