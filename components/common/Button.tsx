@@ -1,5 +1,5 @@
 import { Pressable, Text, PressableProps } from 'react-native';
-import { cn } from '../utils/cn';
+import { cn } from 'utils/cn';
 
 interface ButtonProps extends PressableProps {
   title: string;

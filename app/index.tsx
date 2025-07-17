@@ -1,17 +1,14 @@
 import { Redirect } from 'expo-router';
-import { useAuth } from '../hooks/useAuth';
-import { View, Text } from 'react-native';
+import { useAuth } from '@clerk/clerk-expo';
 import '../global.css';
 
 export default function Index() {
-  const { user } = useAuth();
+  const { isSignedIn } = useAuth()
   console.log('Index component rendered');
 
-  if (user) {
-    // User is authenticated, go to protected area
-    return <Redirect href="/protected" />;
+  if (isSignedIn) {
+    return <Redirect href="/" />;
   }
-  // Not authenticated, go to login
-  return <Redirect href="/auth/login" />;
-
+  
+  return <Redirect href="/login" />;
 }

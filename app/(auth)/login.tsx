@@ -4,25 +4,31 @@ import {
   TextInput, 
   Image, 
   KeyboardAvoidingView, 
+  ScrollView, 
   Platform, 
-  Keyboard, 
-  TouchableWithoutFeedback, 
-  Dimensions, 
-  Pressable, 
-  ScrollView 
+  Keyboard,
+  TouchableWithoutFeedback,
+  Dimensions,
+  Pressable
 } from 'react-native';
 import { Link, router } from 'expo-router';
+import Button from 'components/common/Button';
+import { useSignIn } from '@clerk/clerk-expo'
 import { BlurView } from 'expo-blur';
 import { useState, useEffect } from 'react';
-import Button from '../../components/Button';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-export default function SignupScreen() {
-  const [name, setName] = useState('Jane Doe');
-  const [password, setPassword] = useState('');
+export default function LoginScreen() {
+
+  const [emailAddress, setEmailAddress] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+
+
+  const { signIn, setActive, isLoaded } = useSignIn()
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -39,6 +45,33 @@ export default function SignupScreen() {
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
+
+  const onSignInPress = async () => {
+    if (!isLoaded) return
+
+    // Start the sign-in process using the email and password provided
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: emailAddress,
+        password,
+      })
+
+      // If sign-in process is complete, set the created session as active
+      // and redirect the user
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId })
+        router.replace('/')
+      } else {
+        // If the status isn't complete, check why. User might need to
+        // complete further steps.
+        console.error(JSON.stringify(signInAttempt, null, 2))
+      }
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }
   };
 
   return (
@@ -94,26 +127,24 @@ export default function SignupScreen() {
                   borderColor: 'rgba(255,255,255,0.10)',
                 }}
               >
-                <Text className="text-3xl font-bold text-gray-100 mb-2">Sign up</Text>
-                <Text className="text-base text-gray-400 mb-1">Looks like you don't have an account.</Text>
-                <Text className="text-base text-gray-400 mb-6">
-                  Let's create a new account for <Text className="font-semibold text-gray-100">jane.doe@gmail.com</Text>
-                </Text>
-                <Text className="text-sm text-gray-300 mb-1 font-medium">Name</Text>
+                <Text className="text-3xl font-bold text-gray-100 mb-2">Log in</Text>
+                <Text className="text-base text-gray-400 mb-6">Welcome back! Please enter your credentials to continue.</Text>
+                {/* Username Input */}
+                <Text className="text-sm text-gray-300 mb-1 font-medium">Email</Text>
                 <TextInput
                   className="w-full px-4 py-3 rounded-lg mb-4"
                   style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#F3F4F6', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' }}
-                  placeholder="Name"
+                  placeholder="Email"
                   placeholderTextColor="#888"
-                  value={name}
-                  onChangeText={setName}
-                  autoCapitalize="words"
+                  value={emailAddress}
+                  onChangeText={setEmailAddress}
+                  autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="next"
-                  blurOnSubmit={false}
                 />
+                {/* Password Input */}
                 <Text className="text-sm text-gray-300 mb-1 font-medium">Password</Text>
-                <View className="relative mb-4">
+                <View className="relative mb-6">
                   <TextInput
                     className="w-full px-4 py-3 rounded-lg pr-16"
                     style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#F3F4F6', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' }}
@@ -136,18 +167,19 @@ export default function SignupScreen() {
                     </Text>
                   </Pressable>
                 </View>
-                <Text className="text-xs text-gray-400 mb-4">
-                  By selecting Agree and continue below, I agree to <Text className="text-emerald-400 font-semibold">Terms of Service</Text> and <Text className="text-emerald-400 font-semibold">Privacy Policy</Text>.
-                </Text>
                 <Button
-                  title="Agree and continue"
+                  title="Continue"
                   className="w-full rounded-lg px-4 py-4 text-gray-100 font-bold"
                   style={{ backgroundColor: '#059669' }}
                   onPress={() => {
                     dismissKeyboard();
-                    // Add your signup logic here
+                    // Add your login logic here
                   }}
                 />
+                <Text className="text-center text-gray-400 text-sm mt-2">
+                  Don't have an account?{' '}
+                  <Link href="/signup" className="text-emerald-400 font-semibold">Sign up</Link>
+                </Text>
               </BlurView>
             </View>
           </ScrollView>
@@ -156,4 +188,3 @@ export default function SignupScreen() {
     </TouchableWithoutFeedback>
   );
 }
-
