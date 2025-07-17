@@ -5,9 +5,9 @@ import { SignOutButton } from 'components/common/SignOutButton';
 
 const  DashboardHomeScreen = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
+    <View className="flex-1 items-center justify-center text-white bg-transparent">
       <Text className="text-2xl font-bold text-green-600 mb-2">Dashboard Home</Text>
-      <Text className="mb-4 text-base text-gray-700">This is the dashboard home screen.</Text>
+      <Text className="mb-4 text-base text-white">This is the dashboard home screen.</Text>
       <Link href="/" asChild>
         <SignOutButton/>
       </Link>

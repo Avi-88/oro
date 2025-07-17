@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
-import { Stack, Redirect } from 'expo-router';
+import { Stack, Redirect, SplashScreen } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
 export default function AuthLayout() {

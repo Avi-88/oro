@@ -1,11 +1,17 @@
 import { Stack } from 'expo-router';
-import { View, Text } from 'react-native';
+import { View, Text, ImageBackground } from 'react-native';
 
 const  DashboardLayout = () => {
   return (
-    <View className="flex-1 bg-gray-100">
-      <Stack screenOptions={{ headerShown: false }} />
+    <ImageBackground
+    source={require('../../../../assets/bg-1.png')}
+      className='flex-1 h-full w-full'
+      resizeMode="cover"
+    >
+    <View className="flex-1 bg-transparent">
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
     </View>
+    </ImageBackground>
   );
 } 
 
