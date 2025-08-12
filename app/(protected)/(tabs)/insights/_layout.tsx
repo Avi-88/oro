@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { View, Text ,ImageBackground} from 'react-native';
 
-const  AccountLayout = () => {
+const  InsightsLayout = () => {
   return (
     <ImageBackground
     source={require('../../../../assets/bgl-1.jpeg')}
@@ -15,4 +15,4 @@ const  AccountLayout = () => {
   );
 } 
 
-export default AccountLayout
+export default InsightsLayout

@@ -1,10 +1,10 @@
 import { Stack } from 'expo-router';
 import { View, Text ,ImageBackground} from 'react-native';
 
-const  AccountLayout = () => {
+const  MoodLayout = () => {
   return (
     <ImageBackground
-    source={require('../../../../assets/bgl-1.jpeg')}
+    source={require('../../../../assets/bgg-2.jpeg')}
       className='flex-1 h-full w-full'
       resizeMode="cover"
     >
@@ -15,4 +15,4 @@ const  AccountLayout = () => {
   );
 } 
 
-export default AccountLayout
+export default MoodLayout

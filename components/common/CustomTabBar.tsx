@@ -1,38 +1,54 @@
-import { View, Pressable } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+// Map route names to icons - exactly 5 tabs as shown in reference
+const tabIcons = {
+  dashboard: {
+    name: 'home',
+    IconComponent: Feather,
+  },
+  insights: {
+    name: 'bar-chart-2',
+    IconComponent: Feather,
+  },
+  mood: {
+    name: 'plus',
+    IconComponent: Feather,
+  },
+  journals: {
+    name: 'book-open',
+    IconComponent: Feather,
+  },
+  account: {
+    name: 'user',
+    IconComponent: Feather,
+  },
+};
+
+export default function CustomTabBar({ state, descriptors, navigation }) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="absolute width-full bottom-0 left-0 right-0 pb-8 px-6">
-      <View 
-        className="mx-auto rounded-3xl overflow-hidden max-w-[90%] w-full"
-        style={{
-          backgroundColor: 'transparent',
-          borderRadius: 32,
-          borderWidth: 1,
-          borderColor: 'rgba(255,255,255,0.25)',
-          // shadowColor: '#000',
-          // shadowOpacity: 0.12,
-          // shadowRadius: 24,
-          // shadowOffset: { width: 0, height: 8 },
-          elevation: 8,
-        }}
-      >
+    <View className="absolute left-0 right-0 bottom-0 w-full">
+      <View className="rounded-t-3xl  overflow-hidden">
         <BlurView
-          intensity={55}
-          tint="dark"
+          intensity={60}
+          tint="light"
+          className="border border-white/20"
           style={{
-            // backgroundColor: 'rgba(24,24,37,0.65)',
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            borderRadius: 32,
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            paddingBottom: insets.bottom,
           }}
         >
-          <View className="flex-row justify-between items-center">
+          <View className="flex-row justify-between items-center py-4 px-6" style={{ minHeight: 40 }}>
             {state.routes.map((route, index) => {
-              const { options } = descriptors[route.key];
               const isFocused = state.index === index;
+              const iconDetails = tabIcons[route.name] || { name: 'alert-circle', IconComponent: Feather };
+              const IconComponent = iconDetails.IconComponent;
+              const iconName = iconDetails.name;
 
               const onPress = () => {
                 const event = navigation.emit({
@@ -40,49 +56,25 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   target: route.key,
                   canPreventDefault: true,
                 });
-
                 if (!isFocused && !event.defaultPrevented) {
-                  navigation.navigate(route.name);
+                  navigation.navigate(route.name, route.params);
                 }
               };
 
-              const onLongPress = () => {
-                navigation.emit({
-                  type: 'tabLongPress',
-                  target: route.key,
-                });
-              };
-
-              // Get the icon name from the route
-              const getIconName = (routeName, focused) => {
-                const iconMap = {
-                  dashboard: focused ? 'home' : 'home-outline',
-                  account: focused ? 'person' : 'person-outline',
-                };
-                return iconMap[routeName] || 'ellipse-outline';
-              };
-
               return (
-                <Pressable
+                <TouchableOpacity
                   key={route.key}
                   onPress={onPress}
-                  onLongPress={onLongPress}
-                  className="flex-1 items-center justify-center"
+                  className="items-center justify-center flex-1"
+                  activeOpacity={0.7}
+                  style={{ height: 40 }}
                 >
-                  <View className="items-center">
-                    <Ionicons
-                      name={getIconName(route.name, isFocused)}
-                      size={22}
-                      color={isFocused ? '#3B82F6' : '#64748B'}
-                    />
-                    {isFocused && (
-                      <View 
-                        className="w-6 h-1 mt-1  rounded-full"
-                        style={{ backgroundColor: '#3B82F6' }}
-                      />
-                    )}
-                  </View>
-                </Pressable>
+                  <IconComponent
+                    name={iconName}
+                    size={24}
+                    color={isFocused ? "#8b5cf6" : "#374151"}
+                  />
+                </TouchableOpacity>
               );
             })}
           </View>
@@ -90,6 +82,4 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       </View>
     </View>
   );
-};
-
-export default CustomTabBar;
+}

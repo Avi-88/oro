@@ -1,33 +1,51 @@
 import { Tabs } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import CustomTabBar from 'components/common/CustomTabBar';
+import { ImageBackground } from 'react-native';
+import CustomTabBar from '../../../components/common/CustomTabBar';
 
 export default function TabsLayout() {
   return (
-    <Tabs 
-      tabBar={props => <CustomTabBar {...props}/>}
-      sceneContainerStyle={{ backgroundColor: 'transparent' }}
+    <ImageBackground
+      source={require('../../../assets/bgl-1.jpeg')}
+      className="flex-1"
+      resizeMode="cover"
     >
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: 'Dashboard',
+      <Tabs 
+        tabBar={props => <CustomTabBar {...props}/>}
+        screenOptions={{
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" color={color} size={size} />
-          ),
         }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: 'Account',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="dashboard"
+          options={{
+            title: 'Home',
+          }}
+        />
+        <Tabs.Screen
+          name="insights"
+          options={{
+            title: 'Insights',
+          }}
+        />
+        <Tabs.Screen
+          name="mood"
+          options={{
+            title: 'Mood Entry',
+          }}
+        />
+        <Tabs.Screen
+          name="journals"
+          options={{
+            title: 'Journals',
+          }}
+        />
+        <Tabs.Screen
+          name="account"
+          options={{
+            title: 'Account',
+          }}
+        />
+      </Tabs>
+    </ImageBackground>
   );
 }
