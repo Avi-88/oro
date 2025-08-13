@@ -1,42 +1,42 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DashboardHomeScreen = () => {
   const insets = useSafeAreaInsets();
 
   const moodOptions = [
-    { name: 'Happy', icon: '😊', color: '#ec4899' },
-    { name: 'Calm', icon: '😐', color: '#f97316' },
-    { name: 'Angry', icon: '😠', color: '#ef4444' },
-    { name: 'Sad', icon: '😢', color: '#dc2626' },
-    { name: 'Excited', icon: '😄', color: '#22c55e' },
+    { name: 'Happy', icon: 'smile-o', color: '#ec4899' },
+    { name: 'Calm', icon: 'meh-o', color: '#f97316' },
+    { name: 'Angry', icon: 'frown-o', color: '#ef4444' },
+    { name: 'Sad', icon: 'frown-o', color: '#dc2626' },
+    { name: 'Excited', icon: 'smile-o', color: '#22c55e' },
   ];
 
   const quickAccessCards = [
     {
       title: 'Write Journal',
       description: 'Log your thoughts and emotions',
-      icon: 'edit-3',
+      icon: 'pencil',
       iconColor: '#6b7280',
     },
     {
       title: 'View Insights',
       description: 'Understand your mood patterns',
-      icon: 'bar-chart-2',
+      icon: 'line-chart',
       iconColor: '#6b7280',
     },
     {
       title: 'Weekly Summary',
       description: 'Recap of your emotional journey',
-      icon: 'calendar',
+      icon: 'calendar-o',
       iconColor: '#6b7280',
     },
     {
       title: 'Therapist Messages',
       description: 'Check-in notes and feedback',
-      icon: 'message-circle',
+      icon: 'comment-o',
       iconColor: '#14b8a6',
     },
   ];
@@ -44,13 +44,13 @@ const DashboardHomeScreen = () => {
   return (
     <ScrollView 
       className="flex-1 bg-transparent"
-      contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+      contentContainerStyle={{ paddingTop: insets.top + 20 ,paddingBottom: insets.bottom + 100 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-6 pt-4">
         {/* Header Section */}
         <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-2xl font-bold text-gray-800">Hello Aisha</Text>
+          <Text className="text-3xl font-bold text-gray-800">Hello Aisha</Text>
           <TouchableOpacity className="p-2">
             <Feather name="bell" size={24} color="#374151" />
           </TouchableOpacity>
@@ -66,13 +66,8 @@ const DashboardHomeScreen = () => {
                 className="items-center"
                 activeOpacity={0.7}
               >
-                <View 
-                  className="w-12 h-12 rounded-full items-center justify-center mb-2"
-                  style={{ backgroundColor: mood.color }}
-                >
-                  <Text className="text-xl">{mood.icon}</Text>
-                </View>
-                <Text className="text-sm text-gray-700 font-medium">{mood.name}</Text>
+                <FontAwesome name={mood.icon as any} size={36} color={mood.color} />
+                <Text className="text-sm text-gray-700 font-medium mt-1">{mood.name}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -81,16 +76,13 @@ const DashboardHomeScreen = () => {
         {/* Journaling Prompt Card */}
         <View className="mb-8">
           <BlurView
-            intensity={60}
+            intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-            }}
+            className="rounded-2xl border border-white/20 overflow-hidden bg-white/30"
           >
             <View className="p-6">
               <View className="flex-row items-start mb-4">
-                <View className="mr-4 mt-1">
+                <View className="mr-4 mt-1 bg-gray-200 p-3 rounded-full">
                   <Feather name="book" size={24} color="#6b7280" />
                 </View>
                 <View className="flex-1">
@@ -103,7 +95,7 @@ const DashboardHomeScreen = () => {
                 </View>
               </View>
               <TouchableOpacity
-                className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl py-3 px-6 items-center"
+                className="bg-pink-500 rounded-xl py-3 px-6 items-center"
                 activeOpacity={0.8}
               >
                 <Text className="text-white font-semibold text-base">Open My Journal</Text>
@@ -123,17 +115,16 @@ const DashboardHomeScreen = () => {
                 activeOpacity={0.7}
               >
                 <BlurView
-                  intensity={60}
+                  intensity={80}
                   tint="light"
-                  className="rounded-2xl border border-white/20 overflow-hidden"
+                  className="rounded-2xl border border-white/20 overflow-hidden bg-white/30"
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    minHeight: 120,
+                    minHeight: 150,
                   }}
                 >
                   <View className="p-4">
-                    <View className="mb-3">
-                      <Feather 
+                    <View className="mb-3 bg-gray-200 p-3 rounded-full w-12 h-12 items-center justify-center">
+                      <FontAwesome 
                         name={card.icon as any} 
                         size={24} 
                         color={card.iconColor} 

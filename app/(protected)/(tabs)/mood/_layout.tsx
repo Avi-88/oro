@@ -4,7 +4,7 @@ import { View, Text ,ImageBackground} from 'react-native';
 const  MoodLayout = () => {
   return (
     <ImageBackground
-    source={require('../../../../assets/bgg-2.jpeg')}
+    source={require('../../../../assets/bgl-1.jpeg')}
       className='flex-1 h-full w-full'
       resizeMode="cover"
     >

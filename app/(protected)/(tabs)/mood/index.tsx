@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
@@ -12,70 +12,61 @@ const MoodEntryPage = () => {
   const [shareWithTherapist, setShareWithTherapist] = useState(false);
 
   const emotions = [
-    { name: 'Happy', icon: '😊', color: '#ec4899' },
-    { name: 'Excited', icon: '✨', color: '#f59e0b' },
-    { name: 'Relaxed', icon: '🍃', color: '#10b981' },
-    { name: 'Tired', icon: '😴', color: '#6b7280' },
-    { name: 'Stressed', icon: '⚡', color: '#ef4444' },
-    { name: 'Sad', icon: '💔', color: '#8b5cf6' },
-    { name: 'Anxious', icon: '😰', color: '#f97316' },
-    { name: 'Grateful', icon: '👍', color: '#22c55e' },
+    { name: 'Happy', icon: 'smile-o', color: '#f472b6' },
+    { name: 'Excited', icon: 'star-o', color: '#f472b6' },
+    { name: 'Relaxed', icon: 'leaf', color: '#f472b6' },
+    { name: 'Tired', icon: 'moon-o', color: '#f472b6' },
+    { name: 'Stressed', icon: 'bolt', color: '#f472b6' },
+    { name: 'Sad', icon: 'frown-o', color: '#f472b6' },
+    { name: 'Anxious', icon: 'cloud', color: '#f472b6' },
+    { name: 'Grateful', icon: 'thumbs-o-up', color: '#f472b6' },
   ];
 
   const adjustSleepHours = (increment: boolean) => {
     const current = parseFloat(sleepHours);
     const newValue = increment ? current + 0.5 : current - 0.5;
     if (newValue >= 0 && newValue <= 24) {
-      setSleepHours(newValue.toString());
+      setSleepHours(newValue.toFixed(1));
     }
   };
 
   return (
     <ScrollView 
       className="flex-1 bg-transparent"
-      contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+      contentContainerStyle={{ paddingTop: insets.top + 60, paddingBottom: insets.bottom + 120 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-6 pt-4">
-        {/* Header */}
-        <View className="flex-row items-center mb-8">
-          <TouchableOpacity className="mr-4">
-            <Feather name="arrow-left" size={24} color="#374151" />
-          </TouchableOpacity>
-          <Text className="text-2xl font-bold text-gray-800">Journal</Text>
-        </View>
-
         {/* Emotion Selection */}
-        <View className="mb-8">
+        <View className="my-8">
           <Text className="text-xl font-bold text-gray-800 mb-6">What emotion is with you today?</Text>
           <View className="flex-row flex-wrap justify-between">
             {emotions.map((emotion, index) => (
               <TouchableOpacity
                 key={index}
-                className="w-[22%] mb-4"
+                className="w-[22%] items-center mb-4"
                 activeOpacity={0.7}
                 onPress={() => setSelectedEmotion(emotion.name)}
               >
                 <BlurView
-                  intensity={60}
+                  intensity={80}
                   tint="light"
-                  className={`rounded-full border border-white/20 overflow-hidden items-center justify-center ${
-                    selectedEmotion === emotion.name ? 'border-pink-400' : ''
-                  }`}
+                  className="w-16 h-16 items-center justify-center"
                   style={{
+                    borderRadius: 9999,
+                    overflow: 'hidden',
+                    borderWidth: 1,
+                    borderColor: selectedEmotion === emotion.name ? '#f472b6' : 'rgba(255, 255, 255, 0.2)',
                     backgroundColor: selectedEmotion === emotion.name 
-                      ? 'rgba(236, 72, 153, 0.1)' 
-                      : 'rgba(255,255,255,0.2)',
-                    aspectRatio: 1,
+                      ? 'rgba(244, 114, 182, 0.1)' 
+                      : 'rgba(255, 255, 255, 0.4)',
                   }}
                 >
-                  <View className="p-4 items-center">
-                    <Text className="text-2xl mb-2">{emotion.icon}</Text>
-                    <Text className="text-xs text-gray-700 font-medium text-center">
-                      {emotion.name}
-                    </Text>
-                  </View>
+                  <FontAwesome name={emotion.icon as any} size={24} color={emotion.color} />
                 </BlurView>
+                <Text className="text-sm text-gray-700 font-medium mt-2 text-center">
+                  {emotion.name}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -84,40 +75,36 @@ const MoodEntryPage = () => {
         {/* Thought Entry */}
         <View className="mb-8">
           <BlurView
-            intensity={60}
+            intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-            }}
+            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
           >
-            <View className="p-6">
+            <View className="p-4">
               <TextInput
                 placeholder="Start typing your thoughts here..."
                 placeholderTextColor="#9ca3af"
                 value={thoughts}
                 onChangeText={setThoughts}
                 multiline
-                numberOfLines={6}
                 className="text-gray-800 text-base leading-6"
                 style={{
-                  minHeight: 120,
+                  minHeight: 100,
                   textAlignVertical: 'top',
                 }}
               />
               
               <View className="flex-row justify-between items-center mt-4">
                 <View className="flex-row">
-                  <TouchableOpacity className="mr-4">
-                    <MaterialCommunityIcons name="image" size={24} color="#3b82f6" />
+                  <TouchableOpacity className="mr-4 bg-gray-200 p-3 rounded-full">
+                    <FontAwesome name="image" size={20} color="#3b82f6" />
                   </TouchableOpacity>
-                  <TouchableOpacity>
-                    <MaterialCommunityIcons name="microphone" size={24} color="#ec4899" />
+                  <TouchableOpacity className="bg-gray-200 p-3 rounded-full">
+                    <FontAwesome name="microphone" size={20} color="#f472b6" />
                   </TouchableOpacity>
                 </View>
                 
                 <TouchableOpacity
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl py-3 px-6"
+                  className="bg-pink-400 rounded-xl py-3 px-6"
                   activeOpacity={0.8}
                 >
                   <Text className="text-white font-semibold text-base">Save Mood Entry</Text>
@@ -130,46 +117,51 @@ const MoodEntryPage = () => {
         {/* Sleep Tracking */}
         <View className="mb-8">
           <BlurView
-            intensity={60}
+            intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-            }}
+            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
           >
             <View className="p-6">
-              <View className="flex-row items-center mb-4">
-                <MaterialCommunityIcons name="bed" size={24} color="#6b7280" />
-                <Text className="text-xl font-bold text-gray-800 ml-3">Sleep</Text>
+              <View className="flex-row items-center justify-between mb-4">
+                <View className="flex-row items-center">
+                  <View className="bg-pink-100 p-3 rounded-full">
+                    <FontAwesome name="bed" size={20} color="#f472b6" />
+                  </View>
+                  <Text className="text-xl font-bold text-gray-800 ml-3">Sleep</Text>
+                </View>
+                <Feather name="chevron-down" size={24} color="#6b7280" />
               </View>
               
-              <Text className="text-lg text-gray-600 mb-4">How was your sleep last night?</Text>
+              <Text className="text-base text-gray-600 mb-4">How was your sleep last night?</Text>
               
-              {/* Sleep Quality Slider Placeholder */}
-              <View className="flex-row justify-between items-center mb-6">
+              <View className="h-2 bg-gray-200 rounded-full mb-2">
+                <View className="h-2 bg-pink-300 rounded-full" style={{ width: `${(parseFloat(sleepHours) / 12) * 100}%`}} />
+              </View>
+              <View className="flex-row justify-between mb-6">
                 <Text className="text-sm text-gray-500">Poor</Text>
-                <View className="flex-1 mx-4 h-2 bg-gray-200 rounded-full">
-                  <View className="h-2 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full w-3/4" />
-                </View>
                 <Text className="text-sm text-gray-500">Excellent</Text>
               </View>
               
-              {/* Sleep Hours */}
               <View className="flex-row items-center justify-between">
                 <Text className="text-base text-gray-700 font-medium">Hours</Text>
                 <View className="flex-row items-center">
                   <TouchableOpacity
                     onPress={() => adjustSleepHours(false)}
-                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center mr-3"
+                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
                   >
-                    <Text className="text-gray-600 font-bold">-</Text>
+                    <Text className="text-gray-600 font-bold text-lg">-</Text>
                   </TouchableOpacity>
-                  <Text className="text-lg font-semibold text-gray-800 mx-4">{sleepHours}</Text>
+                  <TextInput
+                    className="text-lg font-semibold text-gray-800 mx-4 w-12 text-center"
+                    value={sleepHours}
+                    onChangeText={setSleepHours}
+                    keyboardType="numeric"
+                  />
                   <TouchableOpacity
                     onPress={() => adjustSleepHours(true)}
-                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center ml-3"
+                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
                   >
-                    <Text className="text-gray-600 font-bold">+</Text>
+                    <Text className="text-gray-600 font-bold text-lg">+</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -180,12 +172,9 @@ const MoodEntryPage = () => {
         {/* Therapist Sharing */}
         <View className="mb-6">
           <BlurView
-            intensity={60}
+            intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-            }}
+            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
           >
             <View className="p-6">
               <View className="flex-row justify-between items-center">
@@ -200,8 +189,9 @@ const MoodEntryPage = () => {
                 <Switch
                   value={shareWithTherapist}
                   onValueChange={setShareWithTherapist}
-                  trackColor={{ false: '#d1d5db', true: '#ec4899' }}
-                  thumbColor={shareWithTherapist ? '#ffffff' : '#ffffff'}
+                  trackColor={{ false: '#d1d5db', true: '#f472b6' }}
+                  thumbColor={'#ffffff'}
+                  ios_backgroundColor="#d1d5db"
                 />
               </View>
             </View>
@@ -212,4 +202,4 @@ const MoodEntryPage = () => {
   );
 };
 
-export default MoodEntryPage; 
+export default MoodEntryPage;

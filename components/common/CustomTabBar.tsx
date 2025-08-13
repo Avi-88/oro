@@ -35,11 +35,10 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
     <View className="absolute left-0 right-0 bottom-0 w-full">
       <View className="rounded-t-3xl  overflow-hidden">
         <BlurView
-          intensity={60}
+          intensity={110}
           tint="light"
           className="border border-white/20"
           style={{
-            backgroundColor: 'rgba(255,255,255,0.2)',
             paddingBottom: insets.bottom,
           }}
         >
