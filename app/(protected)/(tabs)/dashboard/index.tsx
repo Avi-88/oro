@@ -37,7 +37,7 @@ const DashboardHomeScreen = () => {
       title: 'Therapist Messages',
       description: 'Check-in notes and feedback',
       icon: 'comment-o',
-      iconColor: '#14b8a6',
+      iconColor: '#6b7280',
     },
   ];
 
@@ -78,7 +78,7 @@ const DashboardHomeScreen = () => {
           <BlurView
             intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden bg-white/30"
+            className="rounded-2xl border border-black/5 overflow-hidden bg-white/30"
           >
             <View className="p-6">
               <View className="flex-row items-start mb-4">
@@ -95,7 +95,7 @@ const DashboardHomeScreen = () => {
                 </View>
               </View>
               <TouchableOpacity
-                className="bg-pink-500 rounded-xl py-3 px-6 items-center"
+                className="bg-pink-400 rounded-xl py-3 px-6 items-center"
                 activeOpacity={0.8}
               >
                 <Text className="text-white font-semibold text-base">Open My Journal</Text>
@@ -117,7 +117,7 @@ const DashboardHomeScreen = () => {
                 <BlurView
                   intensity={80}
                   tint="light"
-                  className="rounded-2xl border border-white/20 overflow-hidden bg-white/30"
+                  className="rounded-2xl border border-black/5 overflow-hidden bg-white/30"
                   style={{
                     minHeight: 150,
                   }}
@@ -126,7 +126,7 @@ const DashboardHomeScreen = () => {
                     <View className="mb-3 bg-gray-200 p-3 rounded-full w-12 h-12 items-center justify-center">
                       <FontAwesome 
                         name={card.icon as any} 
-                        size={24} 
+                        size={18}  
                         color={card.iconColor} 
                       />
                     </View>

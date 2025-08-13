@@ -42,7 +42,7 @@ const JournalsPage = () => {
       <BlurView
         intensity={80}
         tint="light"
-        className="rounded-2xl border border-white/20 overflow-hidden bg-white/30 p-4"
+        className="rounded-2xl border border-black/5 overflow-hidden bg-white/30 p-4"
       >
         <Text className="text-sm text-gray-500 mb-1">{item.date}</Text>
         <Text className="text-lg font-bold text-gray-800 mb-2">{item.title}</Text>
@@ -58,7 +58,7 @@ const JournalsPage = () => {
   return (
     <ScrollView
       className="flex-1 bg-transparent"
-      contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: insets.bottom + 120 }}
+      contentContainerStyle={{ paddingTop: insets.top + 80, paddingBottom: insets.bottom + 120 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-6 pt-4">

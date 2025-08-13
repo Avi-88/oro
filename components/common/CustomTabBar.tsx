@@ -71,7 +71,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
                   <IconComponent
                     name={iconName}
                     size={24}
-                    color={isFocused ? "#8b5cf6" : "#374151"}
+                    color={isFocused ? "#f472b6" : "#374151"}
                   />
                 </TouchableOpacity>
               );

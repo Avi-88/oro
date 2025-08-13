@@ -56,7 +56,7 @@ const MoodEntryPage = () => {
                     borderRadius: 9999,
                     overflow: 'hidden',
                     borderWidth: 1,
-                    borderColor: selectedEmotion === emotion.name ? '#f472b6' : 'rgba(255, 255, 255, 0.2)',
+                    borderColor: selectedEmotion === emotion.name ? '#f472b6' : 'rgba(1, 1, 1, 0.08)',
                     backgroundColor: selectedEmotion === emotion.name 
                       ? 'rgba(244, 114, 182, 0.1)' 
                       : 'rgba(255, 255, 255, 0.4)',
@@ -77,7 +77,7 @@ const MoodEntryPage = () => {
           <BlurView
             intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
+            className="rounded-2xl border border-black/5 overflow-hidden bg-white/40"
           >
             <View className="p-4">
               <TextInput
@@ -95,10 +95,10 @@ const MoodEntryPage = () => {
               
               <View className="flex-row justify-between items-center mt-4">
                 <View className="flex-row">
-                  <TouchableOpacity className="mr-4 bg-gray-200 p-3 rounded-full">
+                  <TouchableOpacity className="mr-6 bg-gray-200 p-3 rounded-full">
                     <FontAwesome name="image" size={20} color="#3b82f6" />
                   </TouchableOpacity>
-                  <TouchableOpacity className="bg-gray-200 p-3 rounded-full">
+                  <TouchableOpacity className="bg-gray-200 py-3 px-4  rounded-full">
                     <FontAwesome name="microphone" size={20} color="#f472b6" />
                   </TouchableOpacity>
                 </View>
@@ -119,7 +119,7 @@ const MoodEntryPage = () => {
           <BlurView
             intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
+            className="rounded-2xl border border-black/5 overflow-hidden bg-white/40"
           >
             <View className="p-6">
               <View className="flex-row items-center justify-between mb-4">
@@ -147,9 +147,11 @@ const MoodEntryPage = () => {
                 <View className="flex-row items-center">
                   <TouchableOpacity
                     onPress={() => adjustSleepHours(false)}
-                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
+                    className="w-8 h-8 rounded-full bg-gray-200 border border-black/10 items-center justify-center"
                   >
-                    <Text className="text-gray-600 font-bold text-lg">-</Text>
+                    <Text className="text-gray-600 font-bold text-lg">
+                      <Feather name="minus" size={18} color="#6b7280" />
+                    </Text>
                   </TouchableOpacity>
                   <TextInput
                     className="text-lg font-semibold text-gray-800 mx-4 w-12 text-center"
@@ -159,9 +161,11 @@ const MoodEntryPage = () => {
                   />
                   <TouchableOpacity
                     onPress={() => adjustSleepHours(true)}
-                    className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
+                    className="w-8 h-8 rounded-full bg-gray-200 border border-black/10 items-center justify-center"
                   >
-                    <Text className="text-gray-600 font-bold text-lg">+</Text>
+                    <Text className="text-gray-600 font-bold text-lg">
+                      <Feather name="plus" size={16} color="#6b7280" />
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -174,7 +178,7 @@ const MoodEntryPage = () => {
           <BlurView
             intensity={80}
             tint="light"
-            className="rounded-2xl border border-white/20 overflow-hidden bg-white/40"
+            className="rounded-2xl border border-black/5 overflow-hidden bg-white/40"
           >
             <View className="p-6">
               <View className="flex-row justify-between items-center">

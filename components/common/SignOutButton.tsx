@@ -2,7 +2,12 @@ import { useClerk } from '@clerk/clerk-expo'
 import * as Linking from 'expo-linking'
 import { Text, TouchableOpacity } from 'react-native'
 
-export const SignOutButton = () => {
+interface SignOutButtonProps {
+  buttonClasses? : string
+  textClasses? : string
+}
+
+export const SignOutButton = ({buttonClasses, textClasses} : SignOutButtonProps) => {
   const { signOut } = useClerk()
   const handleSignOut = async () => {
     try {
@@ -13,8 +18,8 @@ export const SignOutButton = () => {
     }
   }
   return (
-    <TouchableOpacity onPress={handleSignOut}>
-      <Text>Sign out</Text>
+    <TouchableOpacity className={buttonClasses} onPress={handleSignOut}>
+      <Text className={textClasses}>Sign out</Text>
     </TouchableOpacity>
   )
 }

@@ -27,7 +27,7 @@ const AccountPage = () => {
               <BlurView
                 intensity={80}
                 tint="light"
-                className="rounded-2xl border border-white/20 overflow-hidden bg-white/30"
+                className="rounded-2xl border border-black/5 overflow-hidden bg-white/30"
               >
                 <TouchableOpacity className="p-4 flex-row items-center justify-between">
                   <View className="flex-row items-center">
@@ -40,8 +40,7 @@ const AccountPage = () => {
             </View>
           ))}
         </View>
-
-        <SignOutButton />
+        <SignOutButton buttonClasses="bg-pink-400 rounded-xl py-3 px-6 items-center" textClasses='text-white font-semibold text-base' />
       </View>
     </ScrollView>
   );
