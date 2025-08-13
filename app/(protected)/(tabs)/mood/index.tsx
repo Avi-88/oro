@@ -3,6 +3,7 @@ import { BlurView } from 'expo-blur';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import VoiceRecordingModal from 'components/common/RecordingModal';
 
 const MoodEntryPage = () => {
   const insets = useSafeAreaInsets();
@@ -10,6 +11,8 @@ const MoodEntryPage = () => {
   const [thoughts, setThoughts] = useState('');
   const [sleepHours, setSleepHours] = useState('7.5');
   const [shareWithTherapist, setShareWithTherapist] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [voiceRecordings, setVoiceRecordings] = useState([]);
 
   const emotions = [
     { name: 'Happy', icon: 'smile-o', color: '#f472b6' },
@@ -30,7 +33,24 @@ const MoodEntryPage = () => {
     }
   };
 
+  const handleVoiceRecordingSave = (recordingData) => {
+    // Add the voice recording to our list
+    const newRecording = {
+      id: Date.now(),
+      duration: recordingData.duration,
+      timestamp: new Date(),
+    };
+    setVoiceRecordings([...voiceRecordings, newRecording]);
+  };
+
+  const handleVoiceRecordingDelete = (id) => {
+    // Add the voice recording to our list
+    setVoiceRecordings((prev) => prev.filter((record) => record.id !== id));
+  };
+
   return (
+    <>
+
     <ScrollView 
       className="flex-1 bg-transparent"
       contentContainerStyle={{ paddingTop: insets.top + 60, paddingBottom: insets.bottom + 120 }}
@@ -72,6 +92,39 @@ const MoodEntryPage = () => {
           </View>
         </View>
 
+         {/* Voice Recordings Display */}
+         {voiceRecordings.length > 0 && (
+            <View className="mb-8">
+              <Text className="text-lg font-semibold text-gray-800 mb-4">Voice Notes</Text>
+              {voiceRecordings.map((recording) => (
+                <BlurView
+                  key={recording.id}
+                  intensity={80}
+                  tint="light"
+                  className="rounded-2xl border border-black/5 overflow-hidden bg-white/40 mb-3"
+                >
+                  <View className="p-4 flex-row items-center">
+                    <View className="bg-pink-100 p-3 rounded-full mr-4">
+                      <FontAwesome name="microphone" size={16} color="#f472b6" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-gray-800 font-medium">Voice Note</Text>
+                      <Text className="text-gray-600 text-sm">
+                        Duration: {Math.floor(recording.duration / 60)}:{(recording.duration % 60).toString().padStart(2, '0')}
+                      </Text>
+                    </View>
+                    <TouchableOpacity onPress={()=> handleVoiceRecordingDelete(recording.id)} className="p-2 mr-4">
+                      <FontAwesome name="trash" size={16} color="#f472b6" />
+                    </TouchableOpacity>
+                    <TouchableOpacity className="p-2">
+                      <FontAwesome name="play" size={16} color="#f472b6" />
+                    </TouchableOpacity>
+                  </View>
+                </BlurView>
+              ))}
+            </View>
+          )}
+
         {/* Thought Entry */}
         <View className="mb-8">
           <BlurView
@@ -98,7 +151,7 @@ const MoodEntryPage = () => {
                   <TouchableOpacity className="mr-6 bg-gray-200 p-3 rounded-full">
                     <FontAwesome name="image" size={20} color="#3b82f6" />
                   </TouchableOpacity>
-                  <TouchableOpacity className="bg-gray-200 py-3 px-4  rounded-full">
+                  <TouchableOpacity onPress={() => setShowVoiceModal(true)} className="bg-gray-200 py-3 px-4  rounded-full">
                     <FontAwesome name="microphone" size={20} color="#f472b6" />
                   </TouchableOpacity>
                 </View>
@@ -203,6 +256,14 @@ const MoodEntryPage = () => {
         </View>
       </View>
     </ScrollView>
+
+              {/* Voice Recording Modal */}
+              <VoiceRecordingModal
+        visible={showVoiceModal}
+        onClose={() => setShowVoiceModal(false)}
+        onSave={handleVoiceRecordingSave}
+      />
+    </>
   );
 };
 
