@@ -8,7 +8,7 @@ const  MoodLayout = () => {
       className='flex-1 h-full w-full'
       resizeMode="cover"
     >
-      <View className="flex-1 bg-transparent">
+      <View className="flex-1 bg-[#F6F6FB]">
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
       </View>
     </ImageBackground>

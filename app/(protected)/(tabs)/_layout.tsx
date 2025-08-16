@@ -25,6 +25,10 @@ export default function TabsLayout() {
           //     style={{ flex: 1 }}
           //   />
           // ),
+          headerStyle: {                                   
+                borderBottomWidth: 1,                          
+              borderBottomColor: '#E5E7EB',                  
+          },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 15 }}>
               <Ionicons name="chevron-back" size={24} color="black" />
@@ -48,7 +52,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="mood"
           options={{
-            title: 'Mood Entry',
+            title: 'Journal',
           }}
         />
         <Tabs.Screen

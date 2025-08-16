@@ -1,3 +1,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+/* {
+    periwinkle1: {
+      DEFAULT: '#D3D1FD',
+      100: '#080459',
+      200: '#1007b2',
+      300: '#2b21f6',
+      400: '#807af9',
+      500: '#d3d1fd',
+      600: '#dddcfe',
+      700: '#e6e5fe',
+      800: '#eeedfe',
+      900: '#f7f6ff'
+    },
+    ghost_white1: {
+      DEFAULT: '#F6F6FB',
+      100: '#1f1f44',
+      200: '#3d3d89',
+      300: '#6c6cbd',
+      400: '#b0b0dc',
+      500: '#f6f6fb',
+      600: '#f7f7fb',
+      700: '#f9f9fc',
+      800: '#fbfbfd',
+      900: '#fdfdfe'
+    },
+    ghost_white2: {
+      DEFAULT: '#F4F4FE',
+      100: '#08085b',
+      200: '#1111b7',
+      300: '#3f3fed',
+      400: '#9a9af6',
+      500: '#f4f4fe',
+      600: '#f8f8fe',
+      700: '#f9f9fe',
+      800: '#fbfbff',
+      900: '#fdfdff'
+    },
+    lavender_web: {
+      DEFAULT: '#E5E5FC',
+      100: '#0a0a56',
+      200: '#1414ac',
+      300: '#3838e8',
+      400: '#8e8ef2',
+      500: '#e5e5fc',
+      600: '#e9e9fc',
+      700: '#efeffd',
+      800: '#f4f4fe',
+      900: '#fafafe'
+    },
+    periwinkle2: {
+      DEFAULT: '#B9BEF6',
+      100: '#0a104d',
+      200: '#141f99',
+      300: '#2232e2',
+      400: '#6f79ec',
+      500: '#b9bef6',
+      600: '#c9cdf8',
+      700: '#d6d9fa',
+      800: '#e4e6fb',
+      900: '#f1f2fd'
+    }
+  } */
+  
