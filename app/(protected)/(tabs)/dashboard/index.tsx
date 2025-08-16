@@ -95,7 +95,7 @@ const DashboardHomeScreen = () => {
                 </View>
               </View>
               <TouchableOpacity
-                className="bg-[#B9BEF6] rounded-xl py-3 px-6 items-center"
+                className="bg-pink-400/90 rounded-xl py-3 px-6 items-center"
                 activeOpacity={0.8}
               >
                 <Text className="text-white font-semibold text-base">Open My Journal</Text>

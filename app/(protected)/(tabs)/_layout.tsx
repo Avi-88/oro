@@ -17,7 +17,7 @@ export default function TabsLayout() {
         tabBar={props => <CustomTabBar {...props}/>}
         screenOptions={{
           headerTitleAlign: 'center',
-          headerTransparent: true,
+          // headerTransparent: true,
           // headerBackground: () => (
           //   <BlurView
           //     intensity={120}
@@ -25,10 +25,10 @@ export default function TabsLayout() {
           //     style={{ flex: 1 }}
           //   />
           // ),
-          headerStyle: {                                   
-                borderBottomWidth: 1,                          
-              borderBottomColor: '#E5E7EB',                  
-          },
+          // headerStyle: {                                   
+          //       borderBottomWidth: 1,                          
+          //     borderBottomColor: '#E5E7EB',                  
+          // },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 15 }}>
               <Ionicons name="chevron-back" size={24} color="black" />

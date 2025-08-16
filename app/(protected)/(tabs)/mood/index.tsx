@@ -53,7 +53,7 @@ const MoodEntryPage = () => {
 
     <ScrollView 
       className="flex-1 bg-transparent"
-      contentContainerStyle={{ paddingTop: insets.top + 60, paddingBottom: insets.bottom + 120 }}
+      contentContainerStyle={{  paddingBottom: insets.bottom + 120 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-6 pt-4">
@@ -149,7 +149,7 @@ const MoodEntryPage = () => {
               <View className="flex-row justify-between items-center mt-4">
                 <View className="flex-row">
                   <TouchableOpacity className="mr-6 bg-gray-200 p-3 rounded-full">
-                    <FontAwesome name="image" size={20} color="#3b82f6" />
+                    <FontAwesome name="image" size={20} color="#f472b6" />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setShowVoiceModal(true)} className="bg-gray-200 py-3 px-4  rounded-full">
                     <FontAwesome name="microphone" size={20} color="#f472b6" />

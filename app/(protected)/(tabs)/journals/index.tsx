@@ -58,7 +58,7 @@ const JournalsPage = () => {
   return (
     <ScrollView
       className="flex-1 bg-transparent"
-      contentContainerStyle={{ paddingTop: insets.top + 80, paddingBottom: insets.bottom + 120 }}
+      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 120 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-6 pt-4">
