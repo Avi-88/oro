@@ -16,7 +16,14 @@ export default function AuthLayout() {
   return (
     <>
       <SignedOut>
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack
+          initialRouteName='welcome'
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+            // contentStyle: {backgroundColor: '#D3D1FD'}
+          }}
+        />
       </SignedOut>
       <SignedIn>
         <Redirect href="/" />

@@ -20,7 +20,7 @@ export default function ProtectedLayout() {
         <Stack   screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
       </SignedIn>
       <SignedOut>
-        <Redirect href="/login" />
+        <Redirect href="/welcome" />
       </SignedOut>
     </>
   );
