@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, TouchableOpacity, Animated, Easing, Text, SafeAreaView, Dimensions } from 'react-native';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import Step1 from '../onboarding/Step1';
 import Step2 from '../onboarding/Step2';
 import Step3 from '../onboarding/Step3';
@@ -11,10 +11,12 @@ const steps = [Step1, Step2, Step3];
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({});
+  const [isStepComplete, setIsStepComplete] = useState(false);
   const anim = useRef(new Animated.Value(0)).current;
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (isStepComplete && currentStep < steps.length - 1) {
+      setIsStepComplete(false);
       Animated.timing(anim, {
         toValue: currentStep + 1,
         duration: 400,
@@ -28,6 +30,7 @@ const Onboarding = () => {
 
   const prevStep = () => {
     if (currentStep > 0) {
+      setIsStepComplete(false);
       Animated.timing(anim, {
         toValue: currentStep - 1,
         duration: 400,
@@ -43,6 +46,10 @@ const Onboarding = () => {
     setData({ ...data, ...stepData });
   };
 
+  const handleStepComplete = (isComplete) => {
+    setIsStepComplete(isComplete);
+  };
+
   const finishOnboarding = () => {
     console.log('Onboarding finished with data:', data);
     // Here you would typically navigate to the main app
@@ -54,6 +61,11 @@ const Onboarding = () => {
       outputRange: [width, 0, -width],
     });
 
+    const opacity = anim.interpolate({
+      inputRange: [index - 1, index, index + 1],
+      outputRange: [0, 1, 0],
+    });
+
     return (
       <Animated.View
         key={index}
@@ -62,19 +74,20 @@ const Onboarding = () => {
           height:"100%",
           position: 'absolute',
           transform: [{ translateX }],
+          opacity: opacity,
         }}
       >
-        <StepComponent onDataChange={handleDataChange} />
+        <StepComponent onDataChange={handleDataChange} data={data} onStepComplete={handleStepComplete} isActive={index === currentStep} />
       </Animated.View>
     );
   };
 
   return (
-    <View className='h-full py-10 relative'>
+    <View className='h-full py-10 relative'>    
         {currentStep > 0 && (
           <TouchableOpacity
             onPress={prevStep}
-            className='absolute left-5 top-20 z-50 rounded-full'
+            className='absolute left-5 h-content w-content p-1 top-20 z-50 rounded-full'
           >
             <Feather className='' name="chevron-left" size={30} color="pink" />
           </TouchableOpacity>
@@ -98,19 +111,25 @@ const Onboarding = () => {
       </View>
       <View className='flex justify-center items-center px-20 pb-20'>
         {currentStep === steps.length - 1 ? (
-          <TouchableOpacity
-          onPress={finishOnboarding}
-          className='bg-pink-400 py-4 px-8 rounded-full w-full '
-        >
-          <Text className='text-white font-bold text-center'>Finish</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={finishOnboarding}
+              className='py-4 px-8 rounded-full w-full bg-pink-400'
+            >
+              <Text className='text-white font-bold text-center'>Finish</Text>
+            </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            onPress={nextStep}
-            className='bg-pink-400 py-4 px-8 rounded-full w-full '
-          >
-            <Text className='text-white font-bold text-center'>Next</Text>
-          </TouchableOpacity>
+          isStepComplete ? (
+            <TouchableOpacity
+              onPress={nextStep}
+              className='py-4 px-8 rounded-full w-full bg-pink-400'
+            >
+              <Text className='text-white font-bold text-center'>Next</Text>
+            </TouchableOpacity>
+          ) : (
+            <View className='py-4 px-8 rounded-full w-full bg-gray-300'>
+              <Text className='text-white font-bold text-center'>Next</Text>
+            </View>
+          )
         )}
       </View>
       </View>

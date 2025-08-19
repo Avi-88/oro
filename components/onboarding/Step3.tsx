@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 
-const Step3 = () => {
+interface Step3Props {
+  onStepComplete: (isComplete: boolean) => void;
+}
+
+const Step3 = ({ onStepComplete }: Step3Props) => {
+  // useEffect(() => {
+  //   onStepComplete(true);
+  // }, []);
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>You're all set!</Text>
-      <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 40 }}>
+    <View className='flex flex-col h-full justify-center items-center px-4'>
+      <Text className='text-pink-400 text-4xl font-bold pb-4 text-center'>You're all set!</Text>
+      <Text className='text-pink-300 font-semibold text-2xl text-center'>
         You can now start your journey with Oro.
       </Text>
     </View>
