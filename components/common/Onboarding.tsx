@@ -8,7 +8,7 @@ import Step3 from '../onboarding/Step3';
 const { width } = Dimensions.get('window');
 const steps = [Step1, Step2, Step3];
 
-const Onboarding = () => {
+const Onboarding = ({ onFinish }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({});
   const [isStepComplete, setIsStepComplete] = useState(false);
@@ -51,8 +51,9 @@ const Onboarding = () => {
   };
 
   const finishOnboarding = () => {
-    console.log('Onboarding finished with data:', data);
-    // Here you would typically navigate to the main app
+    if (onFinish) {
+      onFinish(data);
+    }
   };
 
   const renderStep = (StepComponent, index) => {
