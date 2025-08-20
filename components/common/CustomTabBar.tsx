@@ -5,11 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
-const TAB_BAR_HEIGHT = 65;
-const BUTTON_DIAMETER =50;
+const TAB_BAR_HEIGHT = 60;
+const BUTTON_DIAMETER = 50;
 const BORDER_WIDTH = 4;
 const TOTAL_BUTTON_DIAMETER = BUTTON_DIAMETER + BORDER_WIDTH * 2; // 68
-const NOTCH_RADIUS = TOTAL_BUTTON_DIAMETER / 2 + 8; // 34 + 8 = 42
+const NOTCH_RADIUS = TOTAL_BUTTON_DIAMETER / 2 + 10; // 34 + 10 = 44
 const CORNER_RADIUS = 25;
 const NOTCH_CORNER_RADIUS = 10; // New constant for notch corner radius
 
@@ -28,13 +28,14 @@ const CustomTabBar = ({ state, navigation }) => {
   const moodRouteIndex = state.routes.findIndex(route => route.name === 'mood');
   const isMoodFocused = state.index === moodRouteIndex;
 
+  // Perfectly symmetric notch path
   const d = `
     M 0 ${CORNER_RADIUS}
     A ${CORNER_RADIUS} ${CORNER_RADIUS} 0 0 1 ${CORNER_RADIUS} 0
     L ${width / 2 - NOTCH_RADIUS - NOTCH_CORNER_RADIUS} 0
-    A ${NOTCH_CORNER_RADIUS} ${NOTCH_CORNER_RADIUS} 0 0 1 ${width / 2 - NOTCH_RADIUS} ${NOTCH_CORNER_RADIUS}
-    A ${NOTCH_RADIUS} ${NOTCH_RADIUS} 0 0 0 ${width / 2 + NOTCH_RADIUS} ${NOTCH_CORNER_RADIUS}
-    A ${NOTCH_CORNER_RADIUS} ${NOTCH_CORNER_RADIUS} 0 0 1 ${width / 2 + NOTCH_RADIUS + NOTCH_CORNER_RADIUS} 0
+    A ${NOTCH_CORNER_RADIUS + 10} ${NOTCH_CORNER_RADIUS + 10} 0 0 1 ${width / 2 - NOTCH_RADIUS + 2} ${NOTCH_CORNER_RADIUS}
+    A ${NOTCH_RADIUS} ${NOTCH_RADIUS} 0 0 0 ${width / 2 + NOTCH_RADIUS - 2} ${NOTCH_CORNER_RADIUS}
+    A ${NOTCH_CORNER_RADIUS + 10} ${NOTCH_CORNER_RADIUS + 10} 0 0 1 ${width / 2 + NOTCH_RADIUS + NOTCH_CORNER_RADIUS} 0
     L ${width - CORNER_RADIUS} 0
     A ${CORNER_RADIUS} ${CORNER_RADIUS} 0 0 1 ${width} ${CORNER_RADIUS}
     L ${width} ${TAB_BAR_HEIGHT + insets.bottom}
@@ -57,7 +58,7 @@ const CustomTabBar = ({ state, navigation }) => {
               navigation.navigate(moodRoute.name, moodRoute.params);
             }
           }}
-          className="w-[${BUTTON_DIAMETER}px] p-4 h-[${BUTTON_DIAMETER}px] rounded-full bg-pink-400 justify-center items-center absolute top-[-24px] z-10  shadow-lg"
+          className="w-[${BUTTON_DIAMETER}px] p-4 h-[${BUTTON_DIAMETER}px] rounded-full bg-pink-400 justify-center items-center absolute top-[-32px] z-10  shadow-lg"
           activeOpacity={0.8}
         >
           <Feather name="plus" size={32} color="white" />
