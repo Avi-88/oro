@@ -1,5 +1,5 @@
 import Button from 'components/common/Button';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import InputField from 'components/common/InputField';
@@ -12,17 +12,16 @@ interface Step1Props {
 const Step1 = ({ onDataChange, onStepComplete }: Step1Props) => {
 
   const [nickName, setNickName] = useState<string>("");
-  const router = useRouter();
 
   const handleChange = (text: string) => {
     setNickName(text);
-    onDataChange({ nickName: text });
+    onDataChange({ nickName: text.trim() });
     onStepComplete(text.length > 0);
   }
 
   return (
     <View className='flex flex-col  h-full justify-start items-center'>
-      <View className='w-full flex flex-col  min-h-[50%] justify-center items-center'>
+      <View className='w-full flex flex-col  min-h-[50%] justify-center items-center px-6'>
         <Text className='text-pink-400 text-4xl font-bold pb-4'>Pleased to meet you!</Text>
         <Text className='text-pink-300 font-semibold text-2xl'>
           what do your friends call you by ?

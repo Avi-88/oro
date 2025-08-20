@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import Button from '../common/Button';
 
@@ -21,7 +21,7 @@ const Step2 = ({ onDataChange, data, onStepComplete } : Step2Props) => {
 
   return (
     <View className='flex flex-col h-full justify-start items-center'>
-      <View className='w-full flex flex-col min-h-[50%] justify-center items-center px-4'>
+      <View className='w-full flex flex-col min-h-[50%] justify-center items-center px-6'>
         <Text className='text-pink-400 text-4xl font-bold pb-4 text-center'>
           Welcome, {data.nickName || 'friend'}!
         </Text>

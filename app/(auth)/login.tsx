@@ -16,6 +16,7 @@ import Button from 'components/common/Button';
 import { useSignIn } from '@clerk/clerk-expo'
 import { BlurView } from 'expo-blur';
 import { useState, useEffect } from 'react';
+import Toast from 'react-native-toast-message';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -56,12 +57,27 @@ export default function LoginScreen() {
       })
       if (signInAttempt.status === 'complete') {
         await setActive({ session: signInAttempt.createdSessionId })
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
+        });
         router.replace('/')
       } else {
         console.error(JSON.stringify(signInAttempt, null, 2))
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Please check your credentials and try again.',
+        });
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2))
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: err.errors[0].message,
+      });
     }
   }
 

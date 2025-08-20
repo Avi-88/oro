@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState , useEffect} from 'react';
+import { View, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import InputField from 'components/common/InputField';
+import { validateEmail, validatePassword } from 'utils/validation';
 
 interface Step3Props {
   onDataChange: (data: { [key: string]: any }) => void;
@@ -10,22 +11,28 @@ interface Step3Props {
 const Step3 = ({ onDataChange, onStepComplete }: Step3Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
+    const emailError = validateEmail(text);
+    setErrors({ ...errors, email: emailError });
     onDataChange({ email: text, password });
-    onStepComplete(text.length > 0 && password.length > 0);
+    onStepComplete(!emailError && !errors.password);
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
+    const passwordError = validatePassword(text);
+    setErrors({ ...errors, password: passwordError });
     onDataChange({ email, password: text });
-    onStepComplete(email.length > 0 && text.length > 0);
+    onStepComplete(!errors.email && !passwordError);
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View className='flex flex-col h-full justify-start items-center'>
-      <View className='w-full flex flex-col min-h-[50%] justify-center items-center px-4'>
+      <View className='w-full flex flex-col min-h-[50%] justify-center items-center px-6'>
         <Text className='text-pink-400 text-4xl font-bold pb-4 text-center'>You're almost set!</Text>
         <Text className='text-pink-300 font-semibold text-2xl text-center'>
           Lets create your account so you can start your journey with Enso.
@@ -42,17 +49,21 @@ const Step3 = ({ onDataChange, onStepComplete }: Step3Props) => {
             value={email}
             onChangeText={handleEmailChange}
             placeHolder='Your email...'
+            error={errors.email}
           />
         </View>
         <View className='w-full'>
           <InputField
             value={password}
+            isSensitive={true}
             onChangeText={handlePasswordChange}
             placeHolder='Your password...'
+            error={errors.password}
           />
         </View>
       </KeyboardAvoidingView>
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 

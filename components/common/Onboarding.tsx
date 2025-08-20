@@ -1,60 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { View, TouchableOpacity, Animated, Easing, Text, SafeAreaView, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Step1 from '../onboarding/Step1';
-import Step2 from '../onboarding/Step2';
-import Step3 from '../onboarding/Step3';
 
 const { width } = Dimensions.get('window');
-const steps = [Step1, Step2, Step3];
 
-const Onboarding = ({ onFinish }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [data, setData] = useState({});
-  const [isStepComplete, setIsStepComplete] = useState(false);
-  const anim = useRef(new Animated.Value(0)).current;
+const Onboarding = ({ steps, currentStep, onNext, onPrev, onDataChange, data, onStepComplete, stepCompletion, renderNextButton }) => {
+  const anim = useRef(new Animated.Value(currentStep)).current;
 
-  const nextStep = () => {
-    if (isStepComplete && currentStep < steps.length - 1) {
-      setIsStepComplete(false);
-      Animated.timing(anim, {
-        toValue: currentStep + 1,
-        duration: 400,
-        easing: Easing.out(Easing.poly(4)),
-        useNativeDriver: true,
-      }).start(() => {
-        setCurrentStep(currentStep + 1);
-      });
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setIsStepComplete(false);
-      Animated.timing(anim, {
-        toValue: currentStep - 1,
-        duration: 400,
-        easing: Easing.out(Easing.poly(4)),
-        useNativeDriver: true,
-      }).start(() => {
-        setCurrentStep(currentStep - 1);
-      });
-    }
-  };
-
-  const handleDataChange = (stepData) => {
-    setData({ ...data, ...stepData });
-  };
-
-  const handleStepComplete = (isComplete) => {
-    setIsStepComplete(isComplete);
-  };
-
-  const finishOnboarding = () => {
-    if (onFinish) {
-      onFinish(data);
-    }
-  };
+  React.useEffect(() => {
+    Animated.timing(anim, {
+      toValue: currentStep,
+      duration: 400,
+      easing: Easing.out(Easing.poly(4)),
+      useNativeDriver: true,
+    }).start();
+  }, [currentStep]);
 
   const renderStep = (StepComponent, index) => {
     const translateX = anim.interpolate({
@@ -78,7 +38,7 @@ const Onboarding = ({ onFinish }) => {
           opacity: opacity,
         }}
       >
-        <StepComponent onDataChange={handleDataChange} data={data} onStepComplete={handleStepComplete} isActive={index === currentStep} />
+        <StepComponent onDataChange={onDataChange} data={data} onStepComplete={(isComplete) => onStepComplete(index, isComplete)} isActive={index === currentStep} />
       </Animated.View>
     );
   };
@@ -87,7 +47,7 @@ const Onboarding = ({ onFinish }) => {
     <View className='h-full py-10 relative'>    
         {currentStep > 0 && (
           <TouchableOpacity
-            onPress={prevStep}
+            onPress={onPrev}
             className='absolute left-5 h-content w-content p-1 top-20 z-50 rounded-full'
           >
             <Feather className='' name="chevron-left" size={30} color="pink" />
@@ -111,26 +71,14 @@ const Onboarding = ({ onFinish }) => {
         ))}
       </View>
       <View className='flex justify-center items-center px-20 pb-20'>
-        {currentStep === steps.length - 1 ? (
-            <TouchableOpacity
-              onPress={finishOnboarding}
-              className='py-4 px-8 rounded-full w-full bg-pink-400'
-            >
-              <Text className='text-white font-bold text-center'>Finish</Text>
-            </TouchableOpacity>
-        ) : (
-          isStepComplete ? (
-            <TouchableOpacity
-              onPress={nextStep}
-              className='py-4 px-8 rounded-full w-full bg-pink-400'
-            >
-              <Text className='text-white font-bold text-center'>Next</Text>
-            </TouchableOpacity>
-          ) : (
-            <View className='py-4 px-8 rounded-full w-full bg-gray-300'>
-              <Text className='text-white font-bold text-center'>Next</Text>
-            </View>
-          )
+        {renderNextButton ? renderNextButton() : (
+          <TouchableOpacity
+            onPress={onNext}
+            disabled={!stepCompletion[currentStep]}
+            className='py-4 px-8 rounded-full w-full bg-pink-400'
+          >
+            <Text className='text-white font-bold text-center'>Next</Text>
+          </TouchableOpacity>
         )}
       </View>
       </View>
