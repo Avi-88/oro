@@ -11,7 +11,7 @@ export default function Button({ title, className, textClassName,  ...props }: B
   return (
     <Pressable
       className={cn(
-        'px-4 py-2 rounded items-center',
+        'rounded items-center',
         className
       )}
       {...props}

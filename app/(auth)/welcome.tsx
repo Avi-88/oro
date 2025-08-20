@@ -42,8 +42,8 @@ const WelcomeScreen = () => {
         </Animated.View>
       </Animated.View>
       <Animated.View style={{ opacity: buttonsAnim, width: '66.6667%' }}>
-        <Button textClassName='text-white font-semibold uppercase' className='bg-pink-400 rounded-full py-4' onPress={() => router.push('/signup')} title='Hi, Enso!'/>
-        <Button textClassName='text-pink-300' className='bg-transparent rounded-full py-4' onPress={() => router.push('/login')} title="I have already met Enso"/>
+        <Button textClassName='text-white font-semibold uppercase' className='bg-pink-400 rounded-full py-6' onPress={() => router.push('/signup')} title='Hi, Enso!'/>
+        <Button textClassName='text-pink-300' className='bg-transparent rounded-full py-6' onPress={() => router.push('/login')} title="I have already met Enso"/>
       </Animated.View>
     </View>
   );

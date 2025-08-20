@@ -104,7 +104,7 @@ const SignupScreen = () => {
         <TouchableOpacity
           onPress={handleSignUp}
           disabled={!stepCompletion[currentStep]}
-          className={`py-4 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
+          className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
         >
           <Text className='text-white font-bold text-center'>Sign Up</Text>
         </TouchableOpacity>
@@ -115,7 +115,7 @@ const SignupScreen = () => {
         <TouchableOpacity
           onPress={handleVerifyCode}
           disabled={!stepCompletion[currentStep]}
-          className={`py-4 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
+          className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
         >
           <Text className='text-white font-bold text-center'>Verify Code</Text>
         </TouchableOpacity>
@@ -125,7 +125,7 @@ const SignupScreen = () => {
       <TouchableOpacity
         onPress={onNext}
         disabled={!stepCompletion[currentStep]}
-        className={`py-4 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-300" : "bg-pink-400")}
+        className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-300" : "bg-pink-400")}
       >
         <Text className='text-white font-bold text-center'>Next</Text>
       </TouchableOpacity>

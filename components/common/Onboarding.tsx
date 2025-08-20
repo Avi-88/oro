@@ -75,7 +75,7 @@ const Onboarding = ({ steps, currentStep, onNext, onPrev, onDataChange, data, on
           <TouchableOpacity
             onPress={onNext}
             disabled={!stepCompletion[currentStep]}
-            className='py-4 px-8 rounded-full w-full bg-pink-400'
+            className='py-6 px-8 rounded-full w-full bg-pink-400'
           >
             <Text className='text-white font-bold text-center'>Next</Text>
           </TouchableOpacity>

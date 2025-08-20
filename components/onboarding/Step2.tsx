@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import Button from '../common/Button';
 
-const options = ['Yes', 'No', 'I am not comfortable sharing right now'];
+const options = ['Yes', 'No', 'Not comfortable sharing right now'];
 
 interface Step2Props {
   onDataChange: (data: { [key: string]: any }) => void;
@@ -36,10 +36,10 @@ const Step2 = ({ onDataChange, data, onStepComplete } : Step2Props) => {
             title={option}
             onPress={() => handleSelect(option)}
             className={
-              `bg-pink-100 rounded-xl mb-4 ` +
+              `bg-pink-100 rounded-xl py-6 mb-4 ` +
               (selectedOption === option ? 'border border-pink-400' : 'border border-pink-100')
             }
-            textClassName='text-pink-300 py-2 font-semibold'
+            textClassName='text-pink-300 font-semibold'
           />
         ))}
       </View>
