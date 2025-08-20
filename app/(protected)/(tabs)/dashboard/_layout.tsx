@@ -8,7 +8,7 @@ const  DashboardLayout = () => {
       className='flex-1 h-full w-full'
       resizeMode="cover"
     >
-    <View className="flex-1 bg-[#F6F6FB]">
+    <View className="flex-1 bg-">
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
     </View>
     </ImageBackground>
