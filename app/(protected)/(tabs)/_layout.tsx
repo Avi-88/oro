@@ -53,6 +53,7 @@ export default function TabsLayout() {
           name="mood"
           options={{
             title: 'Journal',
+            headerShown: false,
           }}
         />
         <Tabs.Screen

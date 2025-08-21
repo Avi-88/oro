@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, View } from 'react-native';
+
+import React from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 import Onboarding from '../../components/common/Onboarding';
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -14,11 +15,8 @@ const steps = [Step1, Step2, Step3, VerifyCode];
 const SignupScreen = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [data, setData] = useState({});
-  const [stepCompletion, setStepCompletion] = useState(steps.map(() => false));
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (data) => {
     if (!isLoaded) {
       return;
     }
@@ -32,7 +30,7 @@ const SignupScreen = () => {
       });
 
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-      setCurrentStep(3);
+      return true; // Indicate success
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
       Toast.show({
@@ -40,10 +38,11 @@ const SignupScreen = () => {
         text1: 'Signup Failed',
         text2: err.errors[0].message,
       });
+      return false; // Indicate failure
     }
   };
 
-  const handleVerifyCode = async () => {
+  const handleVerifyCode = async (data) => {
     if (!isLoaded) {
       return;
     }
@@ -76,56 +75,32 @@ const SignupScreen = () => {
     }
   };
 
-  const onNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
+  const onComplete = async (data) => {
+    await handleVerifyCode(data);
   };
 
-  const onPrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const onDataChange = (stepData) => {
-    setData({ ...data, ...stepData });
-  };
-
-  const onStepComplete = (stepIndex, isComplete) => {
-    const newCompletion = [...stepCompletion];
-    newCompletion[stepIndex] = isComplete;
-    setStepCompletion(newCompletion);
-  };
-
-  const renderNextButton = () => {
+  const renderNextButton = (onNext, isStepComplete, currentData, currentStep) => {
     if (currentStep === 2) {
       return (
         <TouchableOpacity
-          onPress={handleSignUp}
-          disabled={!stepCompletion[currentStep]}
-          className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
+          onPress={async () => {
+            const success = await handleSignUp(currentData);
+            if (success) {
+              onNext();
+            }
+          }}
+          disabled={!isStepComplete}
+          className={`py-6 px-8 rounded-full w-full ` + (!isStepComplete ? "bg-gray-200" : "bg-pink-400")}
         >
           <Text className='text-white font-bold text-center'>Sign Up</Text>
-        </TouchableOpacity>
-      );
-    }
-    if (currentStep === 3) {
-      return (
-        <TouchableOpacity
-          onPress={handleVerifyCode}
-          disabled={!stepCompletion[currentStep]}
-          className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-200" : "bg-pink-400")}
-        >
-          <Text className='text-white font-bold text-center'>Verify Code</Text>
         </TouchableOpacity>
       );
     }
     return (
       <TouchableOpacity
         onPress={onNext}
-        disabled={!stepCompletion[currentStep]}
-        className={`py-6 px-8 rounded-full w-full ` + (!stepCompletion[currentStep] ? "bg-gray-300" : "bg-pink-400")}
+        disabled={!isStepComplete}
+        className={`py-6 px-8 rounded-full w-full ` + (!isStepComplete ? "bg-gray-300" : "bg-pink-400")}
       >
         <Text className='text-white font-bold text-center'>Next</Text>
       </TouchableOpacity>
@@ -135,13 +110,7 @@ const SignupScreen = () => {
   return (
     <Onboarding
       steps={steps}
-      currentStep={currentStep}
-      onNext={onNext}
-      onPrev={onPrev}
-      onDataChange={onDataChange}
-      data={data}
-      onStepComplete={onStepComplete}
-      stepCompletion={stepCompletion}
+      onComplete={onComplete}
       renderNextButton={renderNextButton}
     />
   );
