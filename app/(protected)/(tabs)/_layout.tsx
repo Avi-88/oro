@@ -3,9 +3,11 @@ import { ImageBackground, TouchableOpacity } from 'react-native';
 import CustomTabBar from '../../../components/common/CustomTabBar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
+import { useTabBar } from '../../../context/TabBarContext';
 
 export default function TabsLayout() {
   const router = useRouter();
+  const { isTabBarVisible } = useTabBar();
 
   return (
     <ImageBackground
@@ -14,7 +16,7 @@ export default function TabsLayout() {
       resizeMode="cover"
     >
       <Tabs 
-        tabBar={props => <CustomTabBar {...props}/>}
+        tabBar={props => isTabBarVisible ? <CustomTabBar {...props}/> : null}
         screenOptions={{
           headerTitleAlign: 'center',
           // headerTransparent: true,

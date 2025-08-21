@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import { Stack, Redirect } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
+import { TabBarProvider } from '../../context/TabBarContext';
 
 export default function ProtectedLayout() {
   const { isLoaded } = useAuth();
@@ -15,13 +16,13 @@ export default function ProtectedLayout() {
   }
 
   return (
-    <>
+    <TabBarProvider>
       <SignedIn>
         <Stack   screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
       </SignedIn>
       <SignedOut>
         <Redirect href="/welcome" />
       </SignedOut>
-    </>
+    </TabBarProvider>
   );
 }

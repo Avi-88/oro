@@ -5,27 +5,24 @@ import { validateEmail, validatePassword } from 'utils/validation';
 
 interface Step3Props {
   onDataChange: (data: { [key: string]: any }) => void;
+  data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
 }
 
-const Step3 = ({ onDataChange, onStepComplete }: Step3Props) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Step3 = ({ onDataChange, data, onStepComplete }: Step3Props) => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleEmailChange = (text: string) => {
-    setEmail(text);
     const emailError = validateEmail(text);
     setErrors({ ...errors, email: emailError });
-    onDataChange({ email: text, password });
+    onDataChange({ ...data, email: text });
     onStepComplete(!emailError && !errors.password);
   };
 
   const handlePasswordChange = (text: string) => {
-    setPassword(text);
     const passwordError = validatePassword(text);
     setErrors({ ...errors, password: passwordError });
-    onDataChange({ email, password: text });
+    onDataChange({ ...data, password: text });
     onStepComplete(!errors.email && !passwordError);
   };
 
@@ -46,7 +43,7 @@ const Step3 = ({ onDataChange, onStepComplete }: Step3Props) => {
       >
         <View className='w-full mb-4'>
           <InputField
-            value={email}
+            value={data.email || ''}
             onChangeText={handleEmailChange}
             placeHolder='Your email...'
             error={errors.email}
@@ -54,7 +51,7 @@ const Step3 = ({ onDataChange, onStepComplete }: Step3Props) => {
         </View>
         <View className='w-full'>
           <InputField
-            value={password}
+            value={data.password || ''}
             isSensitive={true}
             onChangeText={handlePasswordChange}
             placeHolder='Your password...'

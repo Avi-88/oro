@@ -15,6 +15,7 @@ const steps = [Step1, Step2, Step3, VerifyCode];
 const SignupScreen = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
+  const [onboardingKey, setOnboardingKey] = React.useState(0);
 
   const handleSignUp = async (data) => {
     if (!isLoaded) {
@@ -77,6 +78,7 @@ const SignupScreen = () => {
 
   const onComplete = async (data) => {
     await handleVerifyCode(data);
+    setOnboardingKey(onboardingKey + 1);
   };
 
   const renderNextButton = (onNext, isStepComplete, currentData, currentStep) => {
@@ -109,6 +111,7 @@ const SignupScreen = () => {
 
   return (
     <Onboarding
+      key={onboardingKey}
       steps={steps}
       onComplete={onComplete}
       renderNextButton={renderNextButton}

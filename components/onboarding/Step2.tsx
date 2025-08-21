@@ -11,11 +11,9 @@ interface Step2Props {
 }
 
 const Step2 = ({ onDataChange, data, onStepComplete } : Step2Props) => {
-  const [selectedOption, setSelectedOption] = useState(null);
 
   const handleSelect = (option) => {
-    setSelectedOption(option);
-    onDataChange({ therapy: option });
+    onDataChange({ ...data, therapy: option });
     onStepComplete(true);
   };
 
@@ -37,7 +35,7 @@ const Step2 = ({ onDataChange, data, onStepComplete } : Step2Props) => {
             onPress={() => handleSelect(option)}
             className={
               `bg-pink-100 rounded-xl py-6 mb-4 ` +
-              (selectedOption === option ? 'border border-pink-400' : 'border border-pink-100')
+              (data.therapy === option ? 'border border-pink-400' : 'border border-pink-100')
             }
             textClassName='text-pink-300 font-semibold'
           />

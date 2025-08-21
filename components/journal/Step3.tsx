@@ -9,12 +9,10 @@ interface Step3Props {
 }
 
 const Step3 = ({ onDataChange, data, onStepComplete } : Step3Props) => {
-  const [text3, setText3] = React.useState(data.text3 || '');
 
-  const handleChange = (text3: string) => {
-    setText3(text3);
-    onDataChange({ text3: text3.trim() });
-    onStepComplete(text3.length > 0);
+  const handleChange = (text: string) => {
+    onDataChange({ ...data, text3: text.trim() });
+    onStepComplete(text.length > 0);
   }
 
   return (
@@ -22,7 +20,7 @@ const Step3 = ({ onDataChange, data, onStepComplete } : Step3Props) => {
       <Text>Step 3</Text>
       <TextInput
         placeholder="Enter something for step 1"
-        value={text3}
+        value={data.text3 || ''}
         onChangeText={handleChange}
       />
     </View>

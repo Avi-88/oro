@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, TouchableOpacity, Animated, Easing, Text, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -11,7 +11,7 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
   const [stepCompletion, setStepCompletion] = useState(steps.map(() => false));
   const anim = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(anim, {
       toValue: currentStep,
       duration: 400,
@@ -42,7 +42,7 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
     setData((prevData) => ({ ...prevData, ...stepData }));
   };
 
-  const onStepComplete = (stepIndex, isComplete) => {
+  const onStepComplete = (stepIndex, isComplete : boolean) => {
     const newCompletion = [...stepCompletion];
     newCompletion[stepIndex] = isComplete;
     setStepCompletion(newCompletion);
@@ -70,7 +70,7 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
           opacity: opacity,
         }}
       >
-        <StepComponent onDataChange={onDataChange} data={data} onStepComplete={(isComplete) => onStepComplete(index, isComplete)} isActive={index === currentStep} />
+        <StepComponent onDataChange={onDataChange} data={data} onStepComplete={(isComplete : boolean) => onStepComplete(index, isComplete)} isActive={index === currentStep} />
       </Animated.View>
     );
   };

@@ -6,16 +6,14 @@ import InputField from 'components/common/InputField';
 
 interface Step1Props {
   onDataChange: (data: { [key: string]: any }) => void;
+  data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
 }
 
-const Step1 = ({ onDataChange, onStepComplete }: Step1Props) => {
-
-  const [nickName, setNickName] = useState<string>("");
+const Step1 = ({ onDataChange, data, onStepComplete }: Step1Props) => {
 
   const handleChange = (text: string) => {
-    setNickName(text);
-    onDataChange({ nickName: text.trim() });
+    onDataChange({ ...data, nickName: text.trim() });
     onStepComplete(text.length > 0);
   }
 
@@ -33,7 +31,7 @@ const Step1 = ({ onDataChange, onStepComplete }: Step1Props) => {
           className="flex felx-col justify-center itemwadbjhbds-center w-4/6"
           style={{ zIndex: 1 }}
         >
-          <InputField value={nickName} onChangeText={handleChange} charLimit={20} placeHolder='Your nickname...'/>
+          <InputField value={data.nickName || ''} onChangeText={handleChange} charLimit={20} placeHolder='Your nickname...'/>
         </KeyboardAvoidingView>
     </View>
   );

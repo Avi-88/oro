@@ -4,15 +4,14 @@ import { View, Text, TextInput } from 'react-native';
 
 interface Step1Props {
   onDataChange: (data: { [key: string]: any }) => void;
+  data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
 }
 
-const Step1 = ({ onDataChange, onStepComplete }: Step1Props) => {
-  const [text, setText] = React.useState('');
+const Step1 = ({ onDataChange, data, onStepComplete }: Step1Props) => {
 
   const handleChange = (text: string) => {
-    setText(text);
-    onDataChange({ text: text.trim() });
+    onDataChange({ ...data, text: text.trim() });
     onStepComplete(text.length > 0);
   }
 
@@ -21,7 +20,7 @@ const Step1 = ({ onDataChange, onStepComplete }: Step1Props) => {
       <Text>Step 1</Text>
       <TextInput
         placeholder="Enter something for step 1"
-        value={text}
+        value={data.text || ''}
         onChangeText={handleChange}
       />
     </View>
