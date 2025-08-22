@@ -1,7 +1,5 @@
 
-import React from 'react';
 import { View, Text } from 'react-native';
-import MoodSelector from './MoodSelector';
 import ArcSlider from './MoodSlider';
 
 interface Step1Props {
@@ -13,15 +11,16 @@ interface Step1Props {
 const Step1 = ({ onDataChange, data, onStepComplete }: Step1Props) => {
 
   const moodSteps = [
-    { emoji: '😭', label: 'Really Bad', color: '#FF4444' },
-    { emoji: '😞', label: 'Bad', color: '#FF8800' },
-    { emoji: '😐', label: 'Okay', color: '#FFDD00' },
-    { emoji: '😊', label: 'Good', color: '#88DD00' },
-    { emoji: '😄', label: 'Really Good', color: '#44DD44' }
+    { emoji: '😭', label: 'Really Bad' },
+    { emoji: '😞', label: 'Bad' },
+    { emoji: '😐', label: 'Okay' },
+    { emoji: '😊', label: 'Good' },
+    { emoji: '😄', label: 'Really Good' }
 ];
 
 const handleStepChange = (step) => {
     console.log('Current mood:', step?.label);
+    onStepComplete(step)
 };
 
   return (

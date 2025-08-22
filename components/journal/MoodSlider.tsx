@@ -1,5 +1,5 @@
 import { View, Text, Dimensions } from 'react-native'
-import { Canvas, Circle, Path, Skia } from '@shopify/react-native-skia'
+import { Canvas, Circle, Path, Skia, Line } from '@shopify/react-native-skia'
 import { useSharedValue, useDerivedValue, withSpring, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useState, useEffect } from 'react';
@@ -11,16 +11,17 @@ const ArcSlider = ({
     onStepChange = () => {}, // Callback for step changes (step object or null)
     onProgressChange = () => {}, // Callback for progress changes (0-1)
     initialStep = null, // Initial step (for stepped mode) or initial progress (for continuous)
-    strokeWidth = 10,
+    strokeWidth = 6,
     arcColor = "#E5E5E5",
     handleColor = "white",
-    handleBorderColor = "#007AFF",
+    handleBorderColor = "#f472b6",
     handleBorderWidth = 4,
     snapThreshold = 40,
-    centerY = height * 0.45,
-    // showLabels = true,
+    centerY = height * 0.50,
     showCurrentDisplay = true,
-    // title = "Arc Slider"
+    showSteps = false, // Control step indicator visibility
+    slotLength = 10, // Length of the vertical slot indicators
+    slotWidth = 6,   // Width of the vertical slot indicators
 }) => {
     const centerX = width / 2;
     const r = (width - strokeWidth) / 2 - 10;
@@ -40,12 +41,24 @@ const ArcSlider = ({
     const stepPositions = isSteppedMode ? steps.map((step, index) => {
         const progress = steps.length === 1 ? 0.5 : index / (steps.length - 1);
         const angle = startAngle + progress * (endAngle - startAngle);
+        const baseX = centerX + r * Math.cos(angle);
+        const baseY = centerY + r * Math.sin(angle);
+        
+        // Calculate perpendicular direction for the slot
+        const perpAngle = angle + Math.PI; // 90 degrees perpendicular
+        const halfSlot = slotLength / 2;
+        
         return {
             ...step,
             progress,
             angle,
-            x: centerX + r * Math.cos(angle),
-            y: centerY + r * Math.sin(angle)
+            x: baseX,
+            y: baseY,
+            // Start and end points of the vertical slot line
+            slotStartX: baseX + halfSlot * Math.cos(perpAngle),
+            slotStartY: baseY + halfSlot * Math.sin(perpAngle),
+            slotEndX: baseX - halfSlot * Math.cos(perpAngle),
+            slotEndY: baseY - halfSlot * Math.sin(perpAngle)
         };
     }) : [];
     
@@ -100,8 +113,6 @@ const ArcSlider = ({
     // Shared values to track previous state and prevent unnecessary updates
     const prevStepProgress = useSharedValue(-1);
     const prevContinuousProgress = useSharedValue(-1);
-    
-    // Calculate progress inline to avoid closure issues
     
     // Helper function to update UI state from JS thread
     const updateUIState = (newStep, newProgress) => {
@@ -237,7 +248,7 @@ const ArcSlider = ({
         <View style={{ flex: 1, paddingTop: 100, width: "100%" }}>            
             {/* Current state display */}
             {showCurrentDisplay && (
-                <View style={{ alignItems: 'center', marginBottom: 30 }}>
+                <View style={{ alignItems: 'center' }}>
                     {isSteppedMode ? (
                         <>
                             <Text style={{ fontSize: 40, marginBottom: 10 }}>
@@ -246,7 +257,7 @@ const ArcSlider = ({
                             <Text style={{ 
                                 fontSize: 18, 
                                 fontWeight: 'bold', 
-                                color: currentStep?.color || '#007AFF'
+                                color: currentStep?.color || '#f472b6'
                             }}>
                                 {currentStep?.label || 'Unknown'}
                             </Text>
@@ -274,26 +285,27 @@ const ArcSlider = ({
                         style="stroke"
                     />
                     
-                    {/* Step indicators for stepped mode */}
-                    {isSteppedMode && stepPositions.map((step, index) => (
-                        <Circle
+                    {/* Vertical slot indicators for stepped mode - only show if showSteps is true */}
+                    {isSteppedMode && showSteps && stepPositions.map((step, index) => (
+                        <Line
                             key={index}
-                            r={8}
-                            cx={step.x}
-                            cy={step.y}
-                            color={step.color || '#007AFF'}
+                            p1={{ x: step.slotStartX, y: step.slotStartY }}
+                            p2={{ x: step.slotEndX, y: step.slotEndY }}
+                            color={step.color || '#f472b6'}
+                            strokeWidth={slotWidth}
+                            strokeCap="round"
                         />
                     ))}
                     
                     {/* Main slider handle */}
                     <Circle
-                        r={22}
+                        r={12}
                         cx={constrainedSkiaCx}
                         cy={constrainedSkiaCy}
                         color={handleColor}
                     />
                     <Circle
-                        r={22}
+                        r={12}
                         cx={constrainedSkiaCx}
                         cy={constrainedSkiaCy}
                         color={isSteppedMode ? (currentStep?.color || handleBorderColor) : handleBorderColor}
@@ -302,33 +314,6 @@ const ArcSlider = ({
                     />
                 </Canvas>
             </GestureDetector>
-
-            {/* Step labels for stepped mode */}
-            {/* {isSteppedMode && showLabels && (
-                <View style={{ 
-                    flexDirection: 'row', 
-                    justifyContent: 'space-around', 
-                    paddingHorizontal: 20,
-                    marginTop: 20,
-                    marginBottom: 40
-                }}>
-                    {steps.map((step, index) => (
-                        <View key={index} style={{ alignItems: 'center', flex: 1 }}>
-                            <Text style={{ fontSize: 20, marginBottom: 5 }}>
-                                {step.emoji}
-                            </Text>
-                            <Text style={{ 
-                                fontSize: 12, 
-                                textAlign: 'center',
-                                color: step.color || '#007AFF',
-                                fontWeight: 'bold'
-                            }}>
-                                {step.label}
-                            </Text>
-                        </View>
-                    ))}
-                </View>
-            )} */}
         </View>
     );
 };
