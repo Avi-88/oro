@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text } from 'react-native';
+import MoodSelector from './MoodSelector';
+import MoodSlider from './MoodSlider';
 
 interface Step1Props {
   onDataChange: (data: { [key: string]: any }) => void;
@@ -10,19 +12,15 @@ interface Step1Props {
 
 const Step1 = ({ onDataChange, data, onStepComplete }: Step1Props) => {
 
-  const handleChange = (text: string) => {
-    onDataChange({ ...data, text: text.trim() });
-    onStepComplete(text.length > 0);
+  const handleMoodChange = (mood: string) => {
+    onDataChange({ ...data, mood });
+    onStepComplete(true);
   }
 
   return (
     <View className='w-full h-full flex justify-center items-center'>
-      <Text>Step 1</Text>
-      <TextInput
-        placeholder="Enter something for step 1"
-        value={data.text || ''}
-        onChangeText={handleChange}
-      />
+      <Text className='text-2xl font-bold mb-8'>How are you feeling today?</Text>
+      <MoodSlider/>
     </View>
   );
 };
