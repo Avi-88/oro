@@ -1,69 +1,133 @@
 import { View, Text, Dimensions } from 'react-native'
-import { Canvas, Circle, Path, Skia, } from '@shopify/react-native-skia'
-import { useSharedValue, useDerivedValue } from 'react-native-reanimated';
+import { Canvas, Circle, Path, Skia } from '@shopify/react-native-skia'
+import { useSharedValue, useDerivedValue, withSpring, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useState, useEffect } from 'react';
 
-const {width, height} = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 
-const MoodSlider = () => {
-    const strokeWidth = 15;
-    const centerX = width / 2;           // Horizontal center
-    const centerY = height * 0.55;        // Position arc lower on screen
-    const r = (width - strokeWidth) / 2 - 10; // Add padding
+const ArcSlider = ({
+    steps = null, // Array of step objects or null for continuous mode
+    onStepChange = () => {}, // Callback for step changes (step object or null)
+    onProgressChange = () => {}, // Callback for progress changes (0-1)
+    initialStep = null, // Initial step (for stepped mode) or initial progress (for continuous)
+    strokeWidth = 10,
+    arcColor = "#E5E5E5",
+    handleColor = "white",
+    handleBorderColor = "#007AFF",
+    handleBorderWidth = 4,
+    snapThreshold = 40,
+    centerY = height * 0.45,
+    // showLabels = true,
+    showCurrentDisplay = true,
+    // title = "Arc Slider"
+}) => {
+    const centerX = width / 2;
+    const r = (width - strokeWidth) / 2 - 10;
     
-    // For TOP half of semicircle - flatter curve
-    const startAngle = Math.PI * 1.25;  // 225° (top-left)
-    const endAngle = Math.PI * 1.75;    // 315° (top-right)
+    // Arc angles for top half semicircle
+    const startAngle = Math.PI * 1.25;  // 225°
+    const endAngle = Math.PI * 1.75;    // 315°
     
-    // Alternative: Even flatter top curve
-    // const startAngle = Math.PI * 1.15;  // ~207° 
-    // const endAngle = Math.PI * 1.85;    // ~333°
-
-    // Calculate arc endpoints
-    const x1 = centerX + r * Math.cos(startAngle);  // Top-left point
-    const y1 = centerY + r * Math.sin(startAngle);  // Above center
-    const x2 = centerX + r * Math.cos(endAngle);    // Top-right point  
-    const y2 = centerY + r * Math.sin(endAngle);    // Above center
-
-    // Arc path for TOP half (sweep-flag = 1 for clockwise)
+    // State for UI updates
+    const [currentStep, setCurrentStep] = useState(null);
+    const [currentProgress, setCurrentProgress] = useState(0.5);
+    
+    // Determine if we're in stepped or continuous mode
+    const isSteppedMode = steps && steps.length > 0;
+    
+    // Calculate step positions for stepped mode
+    const stepPositions = isSteppedMode ? steps.map((step, index) => {
+        const progress = steps.length === 1 ? 0.5 : index / (steps.length - 1);
+        const angle = startAngle + progress * (endAngle - startAngle);
+        return {
+            ...step,
+            progress,
+            angle,
+            x: centerX + r * Math.cos(angle),
+            y: centerY + r * Math.sin(angle)
+        };
+    }) : [];
+    
+    // Calculate initial position
+    const getInitialPosition = () => {
+        if (isSteppedMode && initialStep !== null) {
+            const stepIndex = typeof initialStep === 'number' ? initialStep : 
+                             steps.findIndex(step => step === initialStep);
+            const validIndex = Math.max(0, Math.min(stepIndex, steps.length - 1));
+            return stepPositions[validIndex];
+        } else if (!isSteppedMode && typeof initialStep === 'number') {
+            const progress = Math.max(0, Math.min(initialStep, 1));
+            const angle = startAngle + progress * (endAngle - startAngle);
+            return {
+                x: centerX + r * Math.cos(angle),
+                y: centerY + r * Math.sin(angle)
+            };
+        } else {
+            // Default to middle
+            const angle = startAngle + 0.5 * (endAngle - startAngle);
+            return {
+                x: centerX + r * Math.cos(angle),
+                y: centerY + r * Math.sin(angle)
+            };
+        }
+    };
+    
+    const initialPos = getInitialPosition();
+    
+    // Arc path
+    const x1 = centerX + r * Math.cos(startAngle);
+    const y1 = centerY + r * Math.sin(startAngle);
+    const x2 = centerX + r * Math.cos(endAngle);
+    const y2 = centerY + r * Math.sin(endAngle);
     const backgroundPath = `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`;
     const skiaBackgroundPath = Skia.Path.MakeFromSVGString(backgroundPath);
-
+    
     if (!skiaBackgroundPath) {
         return (
             <View>
-                <Text>Path creation failed!</Text>
-                <Text>Path string: {backgroundPath}</Text>
+                <Text>There was a error rendering this component ❌</Text>
             </View>
         );
     }
-
-    // Creating the movable tab - start at left side
-    const movableCx = useSharedValue(x1)
-    const movableCy = useSharedValue(y1)
-    const previousCx = useSharedValue(x1)
-    const previousCy = useSharedValue(y1)
-
+    
+    // Shared values for slider position
+    const movableCx = useSharedValue(initialPos.x);
+    const movableCy = useSharedValue(initialPos.y);
+    const previousCx = useSharedValue(initialPos.x);
+    const previousCy = useSharedValue(initialPos.y);
+    
+    // Shared values to track previous state and prevent unnecessary updates
+    const prevStepProgress = useSharedValue(-1);
+    const prevContinuousProgress = useSharedValue(-1);
+    
+    // Calculate progress inline to avoid closure issues
+    
+    // Helper function to update UI state from JS thread
+    const updateUIState = (newStep, newProgress) => {
+        if (isSteppedMode) {
+            setCurrentStep(newStep);
+            onStepChange(newStep);
+        } else {
+            setCurrentProgress(newProgress);
+            onProgressChange(newProgress);
+        }
+    };
+    
+    // Constrained X position
     const constrainedSkiaCx = useDerivedValue(() => {
         const deltaX = movableCx.value - centerX;
         const deltaY = movableCy.value - centerY;
         let touchAngle = Math.atan2(deltaY, deltaX);
         
-        // Normalize to 0-2π range
         if (touchAngle < 0) touchAngle += 2 * Math.PI;
         
-        // For TOP arc: check if within range (225° to 315°)
         let progress;
-        
         if (touchAngle >= startAngle && touchAngle <= endAngle) {
-            // Within arc range - calculate progress
             progress = (touchAngle - startAngle) / (endAngle - startAngle);
         } else {
-            // Outside range - snap to nearest end
             const distanceToStart = Math.abs(touchAngle - startAngle);
             const distanceToEnd = Math.abs(touchAngle - endAngle);
-            
-            // Handle wrap-around cases
             const distanceToStartAlt = Math.abs(touchAngle - startAngle + 2 * Math.PI);
             const distanceToEndAlt = Math.abs(touchAngle - endAngle - 2 * Math.PI);
             
@@ -73,11 +137,39 @@ const MoodSlider = () => {
             progress = minDistStart < minDistEnd ? 0 : 1;
         }
         
-        // Convert progress back to angle
+        if (isSteppedMode) {
+            // Check for snapping to step points
+            const currentAngle = startAngle + progress * (endAngle - startAngle);
+            const currentX = centerX + r * Math.cos(currentAngle);
+            const currentY = centerY + r * Math.sin(currentAngle);
+            
+            for (const stepPos of stepPositions) {
+                const distance = Math.sqrt(
+                    Math.pow(currentX - stepPos.x, 2) + Math.pow(currentY - stepPos.y, 2)
+                );
+                if (distance < snapThreshold) {
+                    // Only update if step actually changed
+                    if (prevStepProgress.value !== stepPos.progress) {
+                        prevStepProgress.value = stepPos.progress;
+                        runOnJS(updateUIState)(stepPos, stepPos.progress);
+                    }
+                    return stepPos.x;
+                }
+            }
+        } else {
+            // Continuous mode - only update if progress changed significantly
+            const roundedProgress = Math.round(progress * 100) / 100; // Round to 2 decimal places
+            if (Math.abs(prevContinuousProgress.value - roundedProgress) > 0.01) {
+                prevContinuousProgress.value = roundedProgress;
+                runOnJS(updateUIState)(null, roundedProgress);
+            }
+        }
+        
         const finalAngle = startAngle + progress * (endAngle - startAngle);
         return centerX + r * Math.cos(finalAngle);
     });
-
+    
+    // Constrained Y position
     const constrainedSkiaCy = useDerivedValue(() => {
         const deltaX = movableCx.value - centerX;
         const deltaY = movableCy.value - centerY;
@@ -86,7 +178,6 @@ const MoodSlider = () => {
         if (touchAngle < 0) touchAngle += 2 * Math.PI;
         
         let progress;
-        
         if (touchAngle >= startAngle && touchAngle <= endAngle) {
             progress = (touchAngle - startAngle) / (endAngle - startAngle);
         } else {
@@ -101,50 +192,145 @@ const MoodSlider = () => {
             progress = minDistStart < minDistEnd ? 0 : 1;
         }
         
+        if (isSteppedMode) {
+            const currentAngle = startAngle + progress * (endAngle - startAngle);
+            const currentX = centerX + r * Math.cos(currentAngle);
+            const currentY = centerY + r * Math.sin(currentAngle);
+            
+            for (const stepPos of stepPositions) {
+                const distance = Math.sqrt(
+                    Math.pow(currentX - stepPos.x, 2) + Math.pow(currentY - stepPos.y, 2)
+                );
+                if (distance < snapThreshold) {
+                    return stepPos.y;
+                }
+            }
+        }
+        
         const finalAngle = startAngle + progress * (endAngle - startAngle);
         return centerY + r * Math.sin(finalAngle);
     });
-
+    
+    // Initialize state based on initial position
+    useEffect(() => {
+        if (isSteppedMode) {
+            const initialStepObj = stepPositions[Math.floor(stepPositions.length / 2)] || stepPositions[0];
+            setCurrentStep(initialStepObj);
+            onStepChange(initialStepObj);
+        } else {
+            setCurrentProgress(0.5);
+            onProgressChange(0.5);
+        }
+    }, []);
+    
     const gesture = Gesture.Pan()
         .onUpdate(({ translationX, translationY }) => {
             movableCx.value = translationX + previousCx.value;
             movableCy.value = translationY + previousCy.value;
         })
         .onEnd(() => {
-            previousCx.value = movableCx.value;
-            previousCy.value = movableCy.value;
+            previousCx.value = constrainedSkiaCx.value;
+            previousCy.value = constrainedSkiaCy.value;
         });
-
+    
     return (
-        <View style={{ flex: 1, paddingTop: 100, width:"100%" }}>
-            <Text style={{ textAlign: 'center', marginBottom: 20 }}>MoodSlider - Top Arc</Text>
-            <GestureDetector gesture={gesture} >
-                <Canvas style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingTop: 100, width: "100%" }}>            
+            {/* Current state display */}
+            {showCurrentDisplay && (
+                <View style={{ alignItems: 'center', marginBottom: 30 }}>
+                    {isSteppedMode ? (
+                        <>
+                            <Text style={{ fontSize: 40, marginBottom: 10 }}>
+                                {currentStep?.emoji || '😐'}
+                            </Text>
+                            <Text style={{ 
+                                fontSize: 18, 
+                                fontWeight: 'bold', 
+                                color: currentStep?.color || '#007AFF'
+                            }}>
+                                {currentStep?.label || 'Unknown'}
+                            </Text>
+                        </>
+                    ) : (
+                        <Text style={{ 
+                            fontSize: 24, 
+                            fontWeight: 'bold', 
+                            color: '#007AFF'
+                        }}>
+                            {Math.round(currentProgress * 100)}%
+                        </Text>
+                    )}
+                </View>
+            )}
+
+            <GestureDetector gesture={gesture}>
+                <Canvas style={{ flex: 1, width: "100%" }}>
+                    {/* Background arc */}
                     <Path
                         path={skiaBackgroundPath}
                         strokeCap="round"
                         strokeWidth={strokeWidth}
-                        color="pink"
+                        color={arcColor}
                         style="stroke"
                     />
+                    
+                    {/* Step indicators for stepped mode */}
+                    {isSteppedMode && stepPositions.map((step, index) => (
+                        <Circle
+                            key={index}
+                            r={8}
+                            cx={step.x}
+                            cy={step.y}
+                            color={step.color || '#007AFF'}
+                        />
+                    ))}
+                    
+                    {/* Main slider handle */}
                     <Circle
-                        r={20}
+                        r={22}
                         cx={constrainedSkiaCx}
                         cy={constrainedSkiaCy}
-                        color={"white"}
+                        color={handleColor}
                     />
                     <Circle
-                        r={20}
+                        r={22}
                         cx={constrainedSkiaCx}
                         cy={constrainedSkiaCy}
-                        color={"#007AFF"}
-                        style={"stroke"}
-                        strokeWidth={3}
+                        color={isSteppedMode ? (currentStep?.color || handleBorderColor) : handleBorderColor}
+                        style="stroke"
+                        strokeWidth={handleBorderWidth}
                     />
                 </Canvas>
             </GestureDetector>
+
+            {/* Step labels for stepped mode */}
+            {/* {isSteppedMode && showLabels && (
+                <View style={{ 
+                    flexDirection: 'row', 
+                    justifyContent: 'space-around', 
+                    paddingHorizontal: 20,
+                    marginTop: 20,
+                    marginBottom: 40
+                }}>
+                    {steps.map((step, index) => (
+                        <View key={index} style={{ alignItems: 'center', flex: 1 }}>
+                            <Text style={{ fontSize: 20, marginBottom: 5 }}>
+                                {step.emoji}
+                            </Text>
+                            <Text style={{ 
+                                fontSize: 12, 
+                                textAlign: 'center',
+                                color: step.color || '#007AFF',
+                                fontWeight: 'bold'
+                            }}>
+                                {step.label}
+                            </Text>
+                        </View>
+                    ))}
+                </View>
+            )} */}
         </View>
     );
 };
 
-export default MoodSlider;
+export default ArcSlider;
