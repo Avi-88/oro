@@ -19,6 +19,8 @@ const MoodEntryPage = () => {
   useFocusEffect(
     useCallback(() => {
       setIsTabBarVisible(false);
+      // Force Onboarding to remount by changing its key
+      setOnboardingKey(Date.now()); // Use a new unique key each time the screen is focused
       return () => {
         setIsTabBarVisible(true);
       };

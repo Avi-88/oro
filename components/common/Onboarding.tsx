@@ -80,7 +80,7 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
         {currentStep > 0 && (
           <TouchableOpacity
             onPress={onPrev}
-            className='absolute left-5 h-content w-content p-1 top-20 z-50 rounded-full'
+            className='absolute left-5 h-content w-content p-1 top-4 z-50 rounded-full'
           >
             <Feather className='' name="chevron-left" size={30} color="pink" />
           </TouchableOpacity>
@@ -88,7 +88,7 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
         {onClose && (
             <TouchableOpacity
                 onPress={onClose}
-                className='absolute right-5 h-content w-content p-1 top-20 z-50 rounded-full'
+                className='absolute right-5 h-content w-content p-1 top-4 z-50 rounded-full'
             >
                 <Feather className='' name="x" size={30} color="pink" />
             </TouchableOpacity>
