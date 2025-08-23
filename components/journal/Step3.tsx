@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, ScrollView } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { LinearGradient } from 'expo-linear-gradient';
+import ScrollableMultiSelect from 'components/common/ScrollableMultiSelect';
 
 interface Step3Props {
   onDataChange: (data: { [key: string]: any }) => void;
@@ -26,10 +29,26 @@ const Step3 = ({ onDataChange, data, onStepComplete, isActive }: Step3Props) => 
   }, [isActive, fadeAnim]);
 
   const feelings = [
-    'Happy', 'Sad', 'Anxious', 'Excited', 'Calm', 'Stressed', 
-    'Grateful', 'Tired', 'Energetic', 'Confused', 'Angry', 'Hopeful',
-    'Relaxed', 'Motivated', 'Overwhelmed', 'Content', 'Lonely', 'Inspired'
+    { key: 'Happy', label: 'Happy', icon: 'emoticon-happy-outline' },
+    { key: 'Sad', label: 'Sad', icon: 'emoticon-sad-outline' },
+    { key: 'Anxious', label: 'Anxious', icon: 'emoticon-neutral-outline' },
+    { key: 'Excited', label: 'Excited', icon: 'emoticon-excited-outline' },
+    { key: 'Calm', label: 'Calm', icon: 'emoticon-cool-outline' },
+    { key: 'Stressed', label: 'Stressed', icon: 'emoticon-dead-outline' },
+    { key: 'Grateful', label: 'Grateful', icon: 'emoticon-kiss-outline' },
+    { key: 'Tired', label: 'Tired', icon: 'emoticon-dead-outline' },
+    { key: 'Energetic', label: 'Energetic', icon: 'flash-outline' },
+    { key: 'Confused', label: 'Confused', icon: 'emoticon-confused-outline' },
+    { key: 'Angry', label: 'Angry', icon: 'emoticon-angry-outline' },
+    { key: 'Hopeful', label: 'Hopeful', icon: 'emoticon-happy-outline' },
+    { key: 'Relaxed', label: 'Relaxed', icon: 'emoticon-cool-outline' },
+    { key: 'Motivated', label: 'Motivated', icon: 'run' },
+    { key: 'Overwhelmed', label: 'Overwhelmed', icon: 'emoticon-cry-outline' },
+    { key: 'Content', label: 'Content', icon: 'emoticon-outline' },
+    { key: 'Lonely', label: 'Lonely', icon: 'emoticon-sad-outline' },
+    { key: 'Inspired', label: 'Inspired', icon: 'lightbulb-on-outline' },
   ];
+  
 
   const handleFeelingSelect = (feeling: string) => {
     let newSelectedFeelings;
@@ -43,23 +62,25 @@ const Step3 = ({ onDataChange, data, onStepComplete, isActive }: Step3Props) => 
     onStepComplete(newSelectedFeelings.length > 0);
   };
 
+  const handleSelectionChange = (selectedValues: string[]) => {
+    setSelectedFeelings(selectedValues);
+    onDataChange({ ...data, feelings: selectedValues });
+    onStepComplete(selectedValues.length > 0);
+  };
+
   return (
     <Animated.View 
       className='w-full h-full flex justify-center items-center p-4'
       style={{ opacity: fadeAnim }} // Apply animated opacity
     >
       <Text className='text-pink-400 text-center text-3xl font-bold mb-8'>What other feelings are you experiencing?</Text>
-      <View className='flex flex-row flex-wrap justify-center'>
-        {feelings.map((feeling) => (
-          <TouchableOpacity
-            key={feeling}
-            onPress={() => handleFeelingSelect(feeling)}
-            className={`p-3 m-2 rounded-full ${selectedFeelings.includes(feeling) ? 'bg-pink-500' : 'bg-pink-300'}`}
-          >
-            <Text className={`text-white font-bold ${selectedFeelings.includes(feeling) ? 'text-lg' : 'text-base'}`}>{feeling}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ScrollableMultiSelect
+        options={feelings}
+        selectedValues={selectedFeelings}
+        onSelectionChange={handleSelectionChange}
+        multiSelect={true}
+        itemsPerRow={2}
+      />
     </Animated.View>
   );
 };

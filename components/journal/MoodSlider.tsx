@@ -365,7 +365,7 @@ const ArcSlider = ({
                     paddingBottom: 10
                 }}>
                     {isSteppedMode ? (
-                        <>
+                        <View className='flex flex-col justify-center items-center'>
                             <Text style={{ 
                                 fontSize: responsiveFontSizes.emoji, 
                                 marginBottom: 15 
@@ -381,7 +381,7 @@ const ArcSlider = ({
                             }}>
                                 {currentStep?.label || 'Unknown'}
                             </Text>
-                        </>
+                        </View>
                     ) : (
                         <Text style={{ 
                             fontSize: responsiveFontSizes.progress, 

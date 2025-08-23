@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
-const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
+const Onboarding = ({ steps, onComplete, onClose, renderNextButton, crownComponent }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({});
   const [stepCompletion, setStepCompletion] = useState(steps.map(() => false));
@@ -76,24 +76,27 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton }) => {
   };
 
   return (
-    <View className='h-full py-10 relative'>
+    <View className='h-full flex flex-col justify-center  w-full py-10 relative'>
+      <View className='relative w-full  mb-10  flex-row flex justify-center items-center'>
         {currentStep > 0 && (
           <TouchableOpacity
             onPress={onPrev}
-            className='absolute left-5 h-content w-content p-1 top-4 z-50 rounded-full'
+            className='left-10 bg-pink-100 absolute h-content w-content p-2 z-50 rounded-xl'
           >
             <Feather className='' name="chevron-left" size={30} color="pink" />
           </TouchableOpacity>
         )}
+        {crownComponent && crownComponent}
         {onClose && (
             <TouchableOpacity
                 onPress={onClose}
-                className='absolute right-5 h-content w-content p-1 top-4 z-50 rounded-full'
+                className='h-content bg-pink-100 absolute right-10 w-content p-2 z-50 rounded-xl'
             >
                 <Feather className='' name="x" size={30} color="pink" />
             </TouchableOpacity>
         )}
-      <View style={{ flex: 1, flexDirection: 'row', position: 'relative' }}>
+      </View>
+      <View  style={{ flex: 1, flexDirection: 'row', position: 'relative' }}>
         {steps.map(renderStep)}
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', paddingBottom: 20 }}>

@@ -1,27 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
+import { View, Text, Animated } from 'react-native';
+import ScrollableMultiSelect from 'components/common/ScrollableMultiSelect';
 
 interface Step2Props {
   onDataChange: (data: { [key: string]: any }) => void;
   data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
-  isActive: boolean; // Added isActive prop
+  isActive: boolean;
 }
 
 const Step2 = ({ onDataChange, data, onStepComplete, isActive }: Step2Props) => {
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (isActive) {
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500, // Fade in duration
-        delay: 200, // Slight delay
+        duration: 500,
+        delay: 200,
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0); // Reset opacity when not active
+      fadeAnim.setValue(0);
     }
   }, [isActive, fadeAnim]);
 
@@ -41,37 +42,41 @@ const Step2 = ({ onDataChange, data, onStepComplete, isActive }: Step2Props) => 
     }
   };
 
-  const reasons = ['Work', 'Relationship', 'Exercise', 'Weather', 'Family', 'Friends', 'Health', 'Travel', 'Hobbies', 'Other'];
+  const reasonOptions = [
+    { key: 'Work', label: 'Work', icon: 'briefcase-outline' },
+    { key: 'Relationship', label: 'Relationship', icon: 'heart-outline' },
+    { key: 'Exercise', label: 'Exercise', icon: 'weight-lifter' },
+    { key: 'Weather', label: 'Weather', icon: 'weather-cloudy' },
+    { key: 'Family', label: 'Family', icon: 'home-outline' },
+    { key: 'Friends', label: 'Friends', icon: 'account-group-outline' },
+    { key: 'Health', label: 'Health', icon: 'medical-bag' },
+    { key: 'Travel', label: 'Travel', icon: 'airplane' },
+    { key: 'Hobbies', label: 'Hobbies', icon: 'gamepad-variant-outline' },
+    { key: 'Other', label: 'Other', icon: 'dots-horizontal' },
+  ];
 
-  const handleReasonSelect = (reason: string) => {
-    let newSelectedReasons;
-    if (selectedReasons.includes(reason)) {
-      newSelectedReasons = selectedReasons.filter((r) => r !== reason);
-    } else {
-      newSelectedReasons = [...selectedReasons, reason];
-    }
-    setSelectedReasons(newSelectedReasons);
-    onDataChange({ ...data, reasons: newSelectedReasons });
-    onStepComplete(newSelectedReasons.length > 0);
+  const handleSelectionChange = (selectedValues: string[]) => {
+    setSelectedReasons(selectedValues);
+    onDataChange({ ...data, reasons: selectedValues });
+    onStepComplete(selectedValues.length > 0);
   };
 
   return (
     <Animated.View 
-      className='w-full h-full flex justify-center items-center p-4'
-      style={{ opacity: fadeAnim }} // Apply animated opacity
+      className='w-full h-full flex justify-center items-center px-4'
+      style={{ opacity: fadeAnim }}
     >
-      <Text className='text-pink-400 text-center text-3xl font-bold mb-8'>{getDynamicQuestion()}</Text>
-      <View className='flex flex-row flex-wrap justify-center'>
-        {reasons.map((reason) => (
-          <TouchableOpacity
-            key={reason}
-            onPress={() => handleReasonSelect(reason)}
-            className={`p-3 m-2 rounded-full ${selectedReasons.includes(reason) ? 'bg-pink-500' : 'bg-pink-300'}`}
-          >
-            <Text className={`text-white font-bold ${selectedReasons.includes(reason) ? 'text-lg' : 'text-base'}`}>{reason}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Text className='text-pink-400 text-center text-3xl font-bold mb-10'>
+        {getDynamicQuestion()}
+      </Text>
+      
+      <ScrollableMultiSelect
+        options={reasonOptions}
+        selectedValues={selectedReasons}
+        onSelectionChange={handleSelectionChange}
+        multiSelect={true}
+        itemsPerRow={2}
+      />
     </Animated.View>
   );
 };

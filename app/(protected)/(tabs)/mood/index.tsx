@@ -8,6 +8,7 @@ import Step1 from '../../../../components/journal/Step1';
 import Step2 from '../../../../components/journal/Step2';
 import Step3 from '../../../../components/journal/Step3';
 import { useTabBar } from '../../../../context/TabBarContext';
+import CurrentDateTime from 'components/common/CurrentDateTime';
 
 const steps = [Step1, Step2, Step3];
 
@@ -40,7 +41,7 @@ const MoodEntryPage = () => {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      <Onboarding key={onboardingKey} steps={steps} onComplete={onComplete} onClose={onClose} />
+      <Onboarding crownComponent={<CurrentDateTime/>} key={onboardingKey} steps={steps} onComplete={onComplete} onClose={onClose} />
     </View>
   );
 };

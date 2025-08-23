@@ -44,7 +44,7 @@ const Step1 = ({ onDataChange, data, onStepComplete, isActive }: Step1Props) => 
       className='w-full relative h-full flex justify-center items-center'
       style={{ opacity: fadeAnim }} // Apply animated opacity
     >
-      <Text className='text-pink-400 px-6  text-center text-4xl font-bold pb-4 absolute top-12'>How are you feeling today?</Text>
+      <Text className='text-pink-400 px-6 pt-10  text-center text-4xl font-bold'>How are you feeling today?</Text>
       <ArcSlider
         steps={moodSteps}
         onStepChange={handleStepChange}
