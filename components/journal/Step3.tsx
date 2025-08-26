@@ -1,30 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, ScrollView } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useState, useRef, useEffect } from 'react';
+import { Text, Animated } from 'react-native';
 import ScrollableMultiSelect from 'components/common/ScrollableMultiSelect';
 
 interface Step3Props {
   onDataChange: (data: { [key: string]: any }) => void;
   data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
-  isActive: boolean; // Added isActive prop
+  isActive: boolean; 
 }
 
 const Step3 = ({ onDataChange, data, onStepComplete, isActive }: Step3Props) => {
   const [selectedFeelings, setSelectedFeelings] = useState<string[]>([]);
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current; 
 
   useEffect(() => {
     if (isActive) {
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500, // Fade in duration
-        delay: 200, // Slight delay
+        duration: 500, 
+        delay: 200, 
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0); // Reset opacity when not active
+      fadeAnim.setValue(0); 
     }
   }, [isActive, fadeAnim]);
 
@@ -50,18 +48,6 @@ const Step3 = ({ onDataChange, data, onStepComplete, isActive }: Step3Props) => 
   ];
   
 
-  const handleFeelingSelect = (feeling: string) => {
-    let newSelectedFeelings;
-    if (selectedFeelings.includes(feeling)) {
-      newSelectedFeelings = selectedFeelings.filter((f) => f !== feeling);
-    } else {
-      newSelectedFeelings = [...selectedFeelings, feeling];
-    }
-    setSelectedFeelings(newSelectedFeelings);
-    onDataChange({ ...data, feelings: newSelectedFeelings });
-    onStepComplete(newSelectedFeelings.length > 0);
-  };
-
   const handleSelectionChange = (selectedValues: string[]) => {
     setSelectedFeelings(selectedValues);
     onDataChange({ ...data, feelings: selectedValues });
@@ -71,7 +57,7 @@ const Step3 = ({ onDataChange, data, onStepComplete, isActive }: Step3Props) => 
   return (
     <Animated.View 
       className='w-full h-full flex justify-center items-center p-4'
-      style={{ opacity: fadeAnim }} // Apply animated opacity
+      style={{ opacity: fadeAnim }} 
     >
       <Text className='text-pink-400 text-center text-3xl font-bold mb-8'>What other feelings are you experiencing?</Text>
       <ScrollableMultiSelect

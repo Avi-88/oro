@@ -6,22 +6,22 @@ interface Step1Props {
   onDataChange: (data: { [key: string]: any }) => void;
   data: { [key: string]: any };
   onStepComplete: (isComplete: boolean) => void;
-  isActive: boolean; // Added isActive prop
+  isActive: boolean;
 }
 
 const Step1 = ({ onDataChange, data, onStepComplete, isActive }: Step1Props) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current; 
 
   useEffect(() => {
     if (isActive) {
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500, // Fade in duration
-        delay: 200, // Slight delay
+        duration: 500, 
+        delay: 200, 
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0); // Reset opacity when not active
+      fadeAnim.setValue(0); 
     }
   }, [isActive, fadeAnim]);
 
@@ -48,7 +48,7 @@ const Step1 = ({ onDataChange, data, onStepComplete, isActive }: Step1Props) => 
       <ArcSlider
         steps={moodSteps}
         onStepChange={handleStepChange}
-        initialStep={2} // Start at "Okay"
+        initialStep={2} 
         title="How are you feeling?"
         showLabels={true}
         showCurrentDisplay={true}
