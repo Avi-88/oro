@@ -7,10 +7,11 @@ import Onboarding from '../../../../components/common/Onboarding';
 import Step1 from '../../../../components/journal/Step1';
 import Step2 from '../../../../components/journal/Step2';
 import Step3 from '../../../../components/journal/Step3';
+import Step4 from '../../../../components/journal/Step4';
 import { useTabBar } from '../../../../context/TabBarContext';
 import CurrentDateTime from 'components/common/CurrentDateTime';
 
-const steps = [Step1, Step2, Step3];
+const steps = [Step1, Step2, Step3, Step4];
 
 const MoodEntryPage = () => {
   const insets = useSafeAreaInsets();

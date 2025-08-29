@@ -5,7 +5,15 @@ import { Feather } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
-const Onboarding = ({ steps, onComplete, onClose, renderNextButton, crownComponent }) => {
+interface OnboardingProps {
+  steps: any[];
+  onComplete: (data: any) => void;
+  onClose?: () => void;
+  renderNextButton?: (onNext: () => void, isStepComplete: boolean, data: any, currentStep: number) => React.ReactNode;
+  crownComponent?: React.ReactNode;
+}
+
+const Onboarding = ({ steps, onComplete, onClose, renderNextButton, crownComponent }: OnboardingProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({});
   const [stepCompletion, setStepCompletion] = useState(steps.map(() => false));
@@ -38,17 +46,17 @@ const Onboarding = ({ steps, onComplete, onClose, renderNextButton, crownCompone
     }
   };
 
-  const onDataChange = (stepData) => {
+  const onDataChange = (stepData: any) => {
     setData((prevData) => ({ ...prevData, ...stepData }));
   };
 
-  const onStepComplete = (stepIndex, isComplete : boolean) => {
+  const onStepComplete = (stepIndex: number, isComplete : boolean) => {
     const newCompletion = [...stepCompletion];
     newCompletion[stepIndex] = isComplete;
     setStepCompletion(newCompletion);
   };
 
-  const renderStep = (StepComponent, index) => {
+  const renderStep = (StepComponent: any, index: number) => {
     const translateX = anim.interpolate({
       inputRange: [index - 1, index, index + 1],
       outputRange: [width, 0, -width],
