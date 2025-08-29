@@ -14,7 +14,13 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone for voice recordings."
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true,

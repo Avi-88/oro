@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { FontAwesome, Feather } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -19,15 +20,19 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
   const [recordingTime, setRecordingTime] = useState(0);
   const [hasRecording, setHasRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioLevel, setAudioLevel] = useState(0);
   
   // Animation values
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const waveAmplitudes = useRef(Array(40).fill(0).map(() => new Animated.Value(0.2))).current;
+  const waveAmplitudes = useRef(Array(60).fill(0).map(() => new Animated.Value(0.1))).current;
   const slideUpAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   
-  // Timer ref
+  // Timer and audio refs
   const timerRef = useRef(null);
+  const recordingRef = useRef(null);
+  const soundRef = useRef(null);
+  const levelCheckRef = useRef(null);
 
   useEffect(() => {
     if (visible) {
@@ -52,64 +57,86 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
       setRecordingTime(0);
       setHasRecording(false);
       setIsPlaying(false);
+      setAudioLevel(0);
       slideUpAnim.setValue(screenHeight);
       fadeAnim.setValue(0);
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (levelCheckRef.current) {
+        clearInterval(levelCheckRef.current);
+        levelCheckRef.current = null;
       }
     }
   }, [visible]);
 
+  // Real-time audio level monitoring effect
   useEffect(() => {
     if (isRecording && !isPaused) {
-      // Start pulse animation
+      
+      // Start subtle pulse animation
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.3,
-            duration: 1000,
+            toValue: 1.05 + audioLevel * 0.1,
+            duration: 500,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: 500,
             useNativeDriver: true,
           }),
         ])
       );
       pulse.start();
 
-      // Start wave animation
-      const waveAnimation = () => {
-        const animations = waveAmplitudes.map((anim, index) => {
-          return Animated.loop(
-            Animated.sequence([
-              Animated.timing(anim, {
-                toValue: Math.random() * 0.8 + 0.4,
-                duration: 150 + Math.random() * 100,
-                useNativeDriver: true,
-              }),
-              Animated.timing(anim, {
-                toValue: 0.2 + Math.random() * 0.3,
-                duration: 150 + Math.random() * 100,
-                useNativeDriver: true,
-              }),
-            ])
-          );
+      // Update waveform based on actual audio level or fallback animation
+      const updateWaveform = () => {
+        const baseLevel = 0.3;
+        const maxLevel = 1.0;
+        
+        // Always create fallback animation for now to ensure visibility
+        const effectiveLevel = 0.4 + Math.random() * 0.4;
+        const normalizedLevel = Math.max(baseLevel, Math.min(maxLevel, effectiveLevel));
+        
+        waveAmplitudes.forEach((anim, index) => {
+          // Create more natural wave pattern
+          const distance = Math.abs(index - waveAmplitudes.length / 2);
+          const falloff = Math.max(0.3, 1 - (distance / (waveAmplitudes.length / 2)) * 0.5);
+          const variation = Math.random() * 0.3 + 0.7; // Add some randomness
+          const targetHeight = (normalizedLevel * falloff * variation);
+          
+          Animated.timing(anim, {
+            toValue: targetHeight,
+            duration: 120 + Math.random() * 80,
+            useNativeDriver: true,
+          }).start();
         });
-        Animated.stagger(50, animations).start();
       };
-      waveAnimation();
 
-      // Start timer
+      // Start timer - clear any existing timer first
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
+
+      // Start waveform updates
+      if (levelCheckRef.current) {
+        clearInterval(levelCheckRef.current);
+      }
+      levelCheckRef.current = setInterval(updateWaveform, 150);
 
       return () => {
         pulse.stop();
         if (timerRef.current) {
           clearInterval(timerRef.current);
+        }
+        if (levelCheckRef.current) {
+          clearInterval(levelCheckRef.current);
         }
       };
     } else {
@@ -117,6 +144,9 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
       waveAmplitudes.forEach(anim => anim.setValue(0.2));
       if (timerRef.current) {
         clearInterval(timerRef.current);
+      }
+      if (levelCheckRef.current) {
+        clearInterval(levelCheckRef.current);
       }
     }
   }, [isRecording, isPaused]);
@@ -127,51 +157,200 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleStartRecording = () => {
-    setIsRecording(true);
-    setIsPaused(false);
-    setHasRecording(false);
-  };
+  const handleStartRecording = async () => {
+    try {
+      // Request permissions first
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission to access microphone is required!');
+        return;
+      }
 
-  const handleStopRecording = () => {
-    setIsRecording(false);
-    setIsPaused(false);
-    setHasRecording(true);
-  };
+      // Set audio mode with minimal iOS configuration to avoid conflicts
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
 
-  const handlePauseResume = () => {
-    setIsPaused(!isPaused);
-  };
+      // Start with basic high quality preset to avoid iOS issues
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        (status) => {
+          if (status.metering !== undefined) {
+            // Convert from dB to a 0-1 scale for visualization
+            const normalizedLevel = Math.max(0, Math.min(1, (status.metering + 160) / 160));
+            setAudioLevel(normalizedLevel);
+          }
+        },
+        100 // Update interval in ms
+      );
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleSave = () => {
-    onSave && onSave({ duration: recordingTime });
-    onClose();
-  };
-
-  const handleClose = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+      recordingRef.current = recording;
+      setIsRecording(true);
+      setIsPaused(false);
+      setHasRecording(false);
+      setRecordingTime(0); // Reset timer when starting new recording
+      
+    } catch (error) {
+      console.error('Failed to start recording', error);
+      
+      // Reset audio mode on error
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: false,
+        });
+      } catch (resetError) {
+        console.error('Failed to reset audio mode', resetError);
+      }
+      
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Recording failed: ${errorMessage}. Please check microphone permissions and try again.`);
     }
+  };
+
+  const handleStopRecording = async () => {
+    try {
+      if (recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync();
+        setIsRecording(false);
+        setIsPaused(false);
+        setHasRecording(true);
+        setAudioLevel(0);
+        
+        // Stop the timer
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        if (levelCheckRef.current) {
+          clearInterval(levelCheckRef.current);
+          levelCheckRef.current = null;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to stop recording', error);
+    }
+  };
+
+  const handlePauseResume = async () => {
+    try {
+      if (recordingRef.current) {
+        if (isPaused) {
+          await recordingRef.current.startAsync();
+        } else {
+          await recordingRef.current.pauseAsync();
+        }
+        setIsPaused(!isPaused);
+      }
+    } catch (error) {
+      console.error('Failed to pause/resume recording', error);
+    }
+  };
+
+  const handlePlayPause = async () => {
+    try {
+      if (isPlaying) {
+        if (soundRef.current) {
+          await soundRef.current.pauseAsync();
+          setIsPlaying(false);
+        }
+      } else {
+        if (recordingRef.current) {
+          const uri = recordingRef.current.getURI();
+          const { sound } = await Audio.Sound.createAsync({ uri });
+          soundRef.current = sound;
+          await sound.playAsync();
+          setIsPlaying(true);
+          
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.isLoaded && status.didJustFinish) {
+              setIsPlaying(false);
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to play/pause', error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      let uri = null;
+      if (recordingRef.current) {
+        uri = recordingRef.current.getURI();
+      }
+      onSave && onSave({ 
+        duration: recordingTime, 
+        uri: uri,
+        timestamp: new Date().toISOString()
+      });
+      onClose();
+    } catch (error) {
+      console.error('Failed to save recording', error);
+    }
+  };
+
+  const handleClose = async () => {
+    try {
+      // Stop any ongoing recording
+      if (isRecording && recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync();
+      }
+      
+      // Stop any playing sound
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+      
+      // Clear intervals
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (levelCheckRef.current) {
+        clearInterval(levelCheckRef.current);
+      }
+    } catch (error) {
+      console.error('Error cleaning up audio:', error);
+    }
+    
     onClose();
   };
 
   const renderWaveform = () => {
+    const centerIndex = Math.floor(waveAmplitudes.length / 2);
+    
     return (
-      <View className="flex-row items-center justify-center h-40 space-x-1">
-        {waveAmplitudes.map((anim, index) => (
-          <Animated.View
-            key={index}
-            className="bg-pink-400 w-2 rounded-full"
-            style={{
-              height: 100, // Fixed base height
-              transform: [{ scaleY: anim }],
-            }}
-          />
-        ))}
+      <View className="flex-row items-center justify-center h-32 px-4">
+        {waveAmplitudes.map((anim, index) => {
+          const distanceFromCenter = Math.abs(index - centerIndex);
+          const maxDistance = Math.floor(waveAmplitudes.length / 2);
+          const widthScale = Math.max(0.4, 1 - (distanceFromCenter / maxDistance) * 0.3);
+          
+          return (
+            <Animated.View
+              key={index}
+              style={{
+                backgroundColor: isRecording ? '#f472b6' : '#f8bfd4', // pink-400 or pink-200
+                borderRadius: 2,
+                marginHorizontal: 1,
+                width: Math.max(2, 3 * widthScale),
+                height: 60, // Fixed height for base
+                minHeight: 8,
+                maxHeight: 80,
+                transform: [
+                  { 
+                    scaleY: anim
+                  }
+                ],
+                opacity: isRecording ? 0.9 : 0.4,
+              }}
+            />
+          );
+        })}
       </View>
     );
   };
@@ -268,11 +447,16 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
                       className='mx-4'
                       activeOpacity={0.8}
                     >
-                         <Animated.View
-                        className={` rounded-full items-center justify-center ${
-                          isRecording ? 'bg-red-500 w-16 h-16' : 'bg-pink-400 w-20 h-20'
+                      <Animated.View
+                        className={`rounded-full items-center justify-center ${
+                          isRecording ? 'bg-red-500' : 'bg-pink-400'
                         }`}
-                        >
+                        style={{
+                          width: isRecording ? 72 : 80,
+                          height: isRecording ? 72 : 80,
+                          transform: [{ scale: isRecording ? pulseAnim : 1 }]
+                        }}
+                      >
                         {isRecording ? (
                           <View className="w-6 h-6 bg-white rounded-sm" />
                         ) : (
