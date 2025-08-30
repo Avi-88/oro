@@ -33,6 +33,12 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
   const recordingRef = useRef(null);
   const soundRef = useRef(null);
   const levelCheckRef = useRef(null);
+  const audioLevelRef = useRef(0);
+
+  // Update audioLevelRef when audioLevel changes
+  useEffect(() => {
+    audioLevelRef.current = audioLevel;
+  }, [audioLevel]);
 
   useEffect(() => {
     if (visible) {
@@ -79,13 +85,13 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.05 + audioLevel * 0.1,
-            duration: 500,
+            toValue: 1.08,
+            duration: 800,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 500,
+            duration: 800,
             useNativeDriver: true,
           }),
         ])
@@ -94,11 +100,12 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
 
       // Update waveform based on actual audio level or fallback animation
       const updateWaveform = () => {
-        const baseLevel = 0.3;
+        const baseLevel = 0.2;
         const maxLevel = 1.0;
         
-        // Always create fallback animation for now to ensure visibility
-        const effectiveLevel = 0.4 + Math.random() * 0.4;
+        // Use real audio level from ref, otherwise create subtle fallback animation
+        const currentLevel = audioLevelRef.current;
+        const effectiveLevel = currentLevel > 0.15 ? currentLevel * 1.5 : 0.25 + Math.random() * 0.15;
         const normalizedLevel = Math.max(baseLevel, Math.min(maxLevel, effectiveLevel));
         
         waveAmplitudes.forEach((anim, index) => {
@@ -110,7 +117,7 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
           
           Animated.timing(anim, {
             toValue: targetHeight,
-            duration: 120 + Math.random() * 80,
+            duration: 100 + Math.random() * 50,
             useNativeDriver: true,
           }).start();
         });
@@ -178,7 +185,8 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
         (status) => {
           if (status.metering !== undefined) {
             // Convert from dB to a 0-1 scale for visualization
-            const normalizedLevel = Math.max(0, Math.min(1, (status.metering + 160) / 160));
+            // Adjust the range for better sensitivity (-60dB to 0dB gives better visual response)
+            const normalizedLevel = Math.max(0, Math.min(1, (status.metering + 60) / 60));
             setAudioLevel(normalizedLevel);
           }
         },
@@ -411,7 +419,7 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
               </View>
 
               {/* Waveform */}
-              <View className="px-6 mb-12">
+              <View className="px-6 mb-8">
                 <BlurView
                   intensity={20}
                   tint="light"
@@ -424,7 +432,7 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
               </View>
 
               {/* Controls */}
-              <View className="px-6 mb-8">
+              <View className="px-6 mb-12">
                 {!hasRecording ? (
                   // Recording controls
                   <View className="flex-row items-center justify-center space-x-8">
@@ -452,8 +460,8 @@ const VoiceRecordingModal = ({ visible, onClose, onSave }) => {
                           isRecording ? 'bg-red-500' : 'bg-pink-400'
                         }`}
                         style={{
-                          width: isRecording ? 72 : 80,
-                          height: isRecording ? 72 : 80,
+                          width: isRecording ? 56 : 58,
+                          height: isRecording ? 56 : 58,
                           transform: [{ scale: isRecording ? pulseAnim : 1 }]
                         }}
                       >
